@@ -14,3 +14,7 @@
 - 插件使用 `.plugin` 后缀。
 - 规则文件可按实际格式使用 `.list`、`.conf` 或 `.txt`。
 - 脚本按语言使用 `.js` 等后缀。
+
+## 已收录规则
+
+- `rules/binance.list`: Binance App 分流规则，基于 iOS App 抓包整理。

@@ -1,0 +1,45 @@
+# NAME: Binance
+# AUTHOR: ProxyKit
+# UPDATED: 2026-05-31
+# SOURCE: iOS Binance App mitmproxy capture (binance-flows)
+# NOTE: Core Binance API/CDN domains plus observed Binance app HTTPDNS and fallback endpoints.
+
+# Binance core domains
+HOST-SUFFIX,binance.com
+HOST-SUFFIX,binance.info
+HOST-SUFFIX,binance.click
+HOST-SUFFIX,servicesbinance.com
+HOST-SUFFIX,bsappapi.cc
+
+# Binance static assets and app resources
+HOST-SUFFIX,bnbstatic.com
+HOST-SUFFIX,bscdnweb.com
+HOST-SUFFIX,binance.cloud
+HOST-SUFFIX,binance.gg
+HOST-SUFFIX,binance.im
+
+# Observed Binance app configuration / reporting endpoints
+HOST,api.saasexch.com
+HOST,api.saasexch.co
+HOST,d3sknckuh1o9tg.cloudfront.net
+HOST,fmbxlntehddr.oss-cn-shenzhen.aliyuncs.com
+HOST,upload-bnbstatic-com.s3.ap-northeast-1.amazonaws.com
+
+# Observed Binance app HTTPDNS endpoints
+IP-CIDR,106.15.179.166/32,no-resolve
+IP-CIDR,116.62.79.64/32,no-resolve
+IP-CIDR,120.24.233.110/32,no-resolve
+IP-CIDR,47.106.171.207/32,no-resolve
+
+# Observed HTTPDNS resolution targets for www.bsappapi.cc
+IP-CIDR,39.108.55.122/32,no-resolve
+IP-CIDR,39.108.179.41/32,no-resolve
+IP-CIDR,39.108.239.197/32,no-resolve
+IP-CIDR,43.145.17.249/32,no-resolve
+IP-CIDR,47.106.103.72/32,no-resolve
+IP-CIDR,47.106.116.105/32,no-resolve
+IP-CIDR,47.106.125.50/32,no-resolve
+IP-CIDR,106.53.165.44/32,no-resolve
+IP-CIDR,114.132.46.122/32,no-resolve
+IP-CIDR,119.23.63.226/32,no-resolve
+IP-CIDR,120.77.173.49/32,no-resolve
