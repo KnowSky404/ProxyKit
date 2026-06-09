@@ -18,3 +18,4 @@
 ## 已收录规则
 
 - `rules/binance.list`: Binance App 分流规则，基于 iOS App 抓包整理。
+- `rules/wise.list`: Wise App 分流规则，基于 iOS App Loon 抓包整理。

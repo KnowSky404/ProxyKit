@@ -1,0 +1,20 @@
+# NAME: Wise
+# AUTHOR: ProxyKit
+# UPDATED: 2026-06-09
+# SOURCE: iOS Wise App Loon capture (192_1781013634188.zip)
+# NOTE: Core Wise domains observed from DoH queries in the capture. Third-party SDK domains are kept commented to avoid matching other apps globally.
+
+# Wise core domains
+DOMAIN-SUFFIX,wise.com
+
+# Observed Wise app endpoints covered by wise.com
+# DOMAIN,api.wise.com
+# DOMAIN,cards-api.wise.com
+# DOMAIN,loki-v42zc5nx3sj7swjbm6zacmssmtcs2gck.wise.com
+# DOMAIN,sst.wise.com
+
+# Observed third-party SDK endpoints used by the Wise app
+# Enable only if you want these shared SDK services to follow the Wise policy too.
+# DOMAIN,api.mixpanel.com
+# DOMAIN,sdk.fra-01.braze.eu
+# DOMAIN,skan.singular.net
