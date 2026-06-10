@@ -1,0 +1,51 @@
+# NAME: Bybit
+# AUTHOR: ProxyKit
+# UPDATED: 2026-06-11
+# SOURCE: iOS Bybit App Loon capture (193_1781131028090.zip)
+# NOTE: Domains observed from DoH queries in the capture. Third-party fraud/risk endpoints are kept commented to avoid matching shared services globally.
+
+# Bybit core domains
+HOST-SUFFIX,bybit.com
+HOST-SUFFIX,bybit.biz
+HOST-SUFFIX,jbybit.com
+
+# Bybit app API, websocket, static, and fallback domains observed in capture
+HOST-SUFFIX,byapps.net
+HOST-SUFFIX,bycsi.com
+HOST-SUFFIX,byabcde.com
+HOST-SUFFIX,byabcd.com
+HOST-SUFFIX,bybdc6.com
+HOST-SUFFIX,byd3c3.com
+HOST-SUFFIX,bynbc.com
+HOST-SUFFIX,ng-dex.com
+HOST-SUFFIX,wsot2022.com
+
+# Observed Bybit telemetry / data collection domains
+HOST-SUFFIX,ffbbbdc6d3c353211fe2ba39c9f744cd.com
+HOST,sc-abtest.ffe390afd658c19dcbf707e0597b846d.de
+
+# Observed dedicated CDN hosts queried directly by the app
+HOST,d1znqpii6yeci9.cloudfront.net
+HOST,d2twlc9j3xrrm5.cloudfront.net
+
+# Observed Bybit endpoints covered by suffix rules above
+# HOST,api3.bybit.biz
+# HOST,static.bybit.biz
+# HOST,ws2.bybit.biz
+# HOST,www.bybit.com
+# HOST,www.jbybit.com
+# HOST,api3.byapps.net
+# HOST,ws2.byapps.net
+# HOST,t1.bycsi.com
+# HOST,s1.bycsi.com
+# HOST,fh-static.bycsi.com
+# HOST,asset-file-core-auth-prod.bycsi.com
+# HOST,api3.ng-dex.com
+# HOST,ws2.ng-dex.com
+# HOST,spdtest-cft.ng-dex.com
+# HOST,spdtest-ws.ng-dex.com
+
+# Observed third-party fraud/risk endpoints used by the Bybit app
+# Enable only if these services also need to follow the Bybit policy.
+# HOST,h64.online-metrix.net
+# HOST,www.turingfraud.net
