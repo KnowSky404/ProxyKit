@@ -1,0 +1,77 @@
+# NAME: Bitget Wallet
+# AUTHOR: ProxyKit
+# UPDATED: 2026-06-14
+# SOURCE: iOS Bitget Wallet Loon capture (198_1781417415757.zip)
+# NOTE: Domains observed from DoH queries in the capture. Shared third-party services are kept commented to avoid matching them globally.
+
+# Bitget Wallet / BitKeep core domains
+DOMAIN-SUFFIX,bitkeep.com
+DOMAIN-SUFFIX,bitkeep.app
+DOMAIN-SUFFIX,bitkeep.asia
+DOMAIN-SUFFIX,bitkeep.biz
+DOMAIN-SUFFIX,bitkeep.fun
+DOMAIN-SUFFIX,bitkeep.life
+DOMAIN-SUFFIX,bitkeep.top
+DOMAIN-SUFFIX,bitkeep.vip
+DOMAIN-SUFFIX,bitapi.vip
+
+# Observed Bitget Wallet app fallback / API / static domains
+DOMAIN-SUFFIX,wwmxd.fun
+DOMAIN-SUFFIX,wwmxd.org
+DOMAIN-SUFFIX,wwmxd.shop
+DOMAIN-SUFFIX,chainnear.com
+DOMAIN-SUFFIX,ljhsnzpc.com
+DOMAIN-SUFFIX,lymryy.com
+DOMAIN-SUFFIX,jjdsn.vip
+DOMAIN-SUFFIX,bgw.live
+DOMAIN-SUFFIX,bgw.world
+DOMAIN-SUFFIX,bwb.global
+DOMAIN-SUFFIX,bwb.online
+
+# Observed Bitget Wallet endpoints covered by suffix rules above
+# DOMAIN,api-data.bitkeep.com
+# DOMAIN,api-app-fast.bitkeep.app
+# DOMAIN,api-app-slow.bitkeep.app
+# DOMAIN,api-app-slow.bitkeep.asia
+# DOMAIN,api-app-slow.bitkeep.biz
+# DOMAIN,api-app-slow.bitkeep.fun
+# DOMAIN,api-app-slow.bitkeep.life
+# DOMAIN,api-app-slow.bitkeep.top
+# DOMAIN,cdn.bitkeep.vip
+# DOMAIN,api-app-slow.bitapi.vip
+# DOMAIN,api-app-grpc.wwmxd.fun
+# DOMAIN,api-app-grpc.wwmxd.org
+# DOMAIN,api-app-grpc.wwmxd.shop
+# DOMAIN,api-app-slow.chainnear.com
+# DOMAIN,conf.chainnear.com
+# DOMAIN,api-app-slow.ljhsnzpc.com
+# DOMAIN,api-app-slow.lymryy.com
+# DOMAIN,static-web.jjdsn.vip
+# DOMAIN,newshare.bgw.live
+# DOMAIN,newshare.bgw.world
+# DOMAIN,newshare.bwb.global
+# DOMAIN,newshare.bwb.online
+
+# Observed third-party wallet / chain / partner endpoints
+# Enable only if these services should follow the Bitget Wallet policy too.
+DOMAIN-SUFFIX,walletconnect.org
+DOMAIN-SUFFIX,web3modal.org
+DOMAIN,arb-mainnet.g.alchemy.com
+DOMAIN,arb1.arbitrum.io
+DOMAIN,cca-lite.coinbase.com
+DOMAIN,app.fiat24.com
+DOMAIN,polymarket-upload.s3.us-east-2.amazonaws.com
+
+# Observed third-party telemetry / push endpoints
+# Enable only if push or telemetry traffic also needs the same policy.
+# DOMAIN,log.noxiaohao.com
+# DOMAIN,notifier-configs.airbrake.io
+# DOMAIN,pushstat-hk.engagelab.com
+# DOMAIN,sis-hk.push.engage7.com
+# DOMAIN,sis-hk.push.engageforce.net
+# DOMAIN,sis-hk.push.theengagelab.com
+
+# Observed Apple system domains in the same capture, intentionally not matched.
+# DOMAIN,gateway.icloud.com.cn
+# DOMAIN,ocsp2.g.aaplimg.com
+# DOMAIN,wps.v.aaplimg.com
