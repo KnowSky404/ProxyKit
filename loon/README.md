@@ -20,4 +20,5 @@
 - `rules/binance.list`: Binance App 分流规则，基于 iOS App 抓包整理。
 - `rules/bitget-wallet.list`: Bitget Wallet App 分流规则，基于 iOS App Loon 抓包整理。
 - `rules/bybit.list`: Bybit App 分流规则，基于 iOS App Loon 抓包整理。
+- `rules/ur.list`: UR App 分流规则，基于 iOS App Loon 抓包整理。
 - `rules/wise.list`: Wise App 分流规则，基于 iOS App Loon 抓包整理。
