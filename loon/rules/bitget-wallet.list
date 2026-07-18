@@ -2,7 +2,7 @@
 # AUTHOR: ProxyKit
 # UPDATED: 2026-06-14
 # SOURCE: iOS Bitget Wallet Loon capture (198_1781417415757.zip)
-# NOTE: Domains observed from DoH queries in the capture. Shared third-party services are kept commented to avoid matching them globally.
+# NOTE: Domains observed from DoH queries in the capture. Shared telemetry and Apple system services are kept commented to avoid matching them globally.
 
 # Bitget Wallet / BitKeep core domains
 DOMAIN-SUFFIX,bitkeep.com
@@ -53,7 +53,6 @@ DOMAIN-SUFFIX,bwb.online
 # DOMAIN,newshare.bwb.online
 
 # Observed third-party wallet / chain / partner endpoints
-# Enable only if these services should follow the Bitget Wallet policy too.
 DOMAIN-SUFFIX,walletconnect.org
 DOMAIN-SUFFIX,web3modal.org
 DOMAIN,arb-mainnet.g.alchemy.com

@@ -20,4 +20,5 @@
 - `filters/binance.list`: Binance App 分流规则，基于 iOS App 抓包整理。
 - `filters/bitget-wallet.list`: Bitget Wallet App 分流规则，基于 iOS App Loon 抓包整理。
 - `filters/bybit.list`: Bybit App 分流规则，基于 iOS App Loon 抓包整理。
+- `filters/ur.list`: UR App 分流规则，基于 iOS App Loon 抓包整理。
 - `filters/wise.list`: Wise App 分流规则，基于 iOS App Loon 抓包整理。
