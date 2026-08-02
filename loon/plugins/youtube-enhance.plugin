@@ -1,7 +1,8 @@
 #!name=YouTube Enhance
 #!desc=适用于 YouTube 与 YouTube Music：去广告、画中画、后台播放及字幕翻译。
 #!author=Maasea（原作者） / ProxyKit（Loon 适配）
-#!homepage=https://github.com/Maasea/sgmodule
+#!homepage=https://github.com/KnowSky404/ProxyKit
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
 #!loon_version=3.2.1(733)
 #!system=iOS,iPadOS
 #!tag=去广告,YouTube,YouTube Music
@@ -10,6 +11,7 @@
 # Loon adaptation: ProxyKit
 # Source module: https://github.com/Maasea/sgmodule/blob/master/YouTube.Enhance.sgmodule
 # Upstream scripts: https://github.com/Maasea/sgmodule/tree/master/Script/Youtube
+# Icon source: https://github.com/Koolson/Qure
 # License: Apache License 2.0 (https://github.com/Maasea/sgmodule/blob/master/LICENSE)
 
 [Argument]
