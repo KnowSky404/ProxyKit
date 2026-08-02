@@ -11,6 +11,7 @@
 # Loon adaptation: ProxyKit
 # Source module: https://github.com/Maasea/sgmodule/blob/master/YouTube.Enhance.sgmodule
 # Upstream scripts: https://github.com/Maasea/sgmodule/tree/master/Script/Youtube
+# Loon request adapter: https://github.com/KnowSky404/ProxyKit/blob/main/loon/scripts/youtube.request.js
 # Icon source: https://github.com/Koolson/Qure
 # License: Apache License 2.0 (https://github.com/Maasea/sgmodule/blob/master/LICENSE)
 
@@ -23,8 +24,8 @@ debug = switch,false,tag=启用调试模式,desc=输出更多脚本日志，仅�
 
 [Script]
 http-response ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch|log_event)(\?.*)?$ script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.response.js,tag=YouTube Enhance Response,requires-body=true,binary-body-mode=true,timeout=60,argument=[{captionLang},{blockUpload},{blockImmersive},{blockShorts},{debug}],enable=true
-http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&ack.* script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.request.js,tag=YouTube Enhance Init Playback,requires-body=true,binary-body-mode=true,timeout=60,argument=[{captionLang}],enable=true
-http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.request.js,tag=YouTube Enhance Log Event,requires-body=true,binary-body-mode=true,timeout=60,enable=true
+http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&ack.* script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube.request.js,tag=YouTube Enhance Init Playback,requires-body=true,binary-body-mode=true,timeout=60,argument=[{captionLang},{blockUpload},{blockImmersive},{blockShorts},{debug}],enable=true
+http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube.request.js,tag=YouTube Enhance Log Event,requires-body=true,binary-body-mode=true,timeout=60,argument=[{debug}],enable=true
 
 [MITM]
 hostname = *.googlevideo.com, youtubei.googleapis.com

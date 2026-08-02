@@ -1,0 +1,13 @@
+YouTube request adapter for Loon
+
+Original logic and implementation source:
+  Maasea/sgmodule
+  https://github.com/Maasea/sgmodule/blob/master/Script/Youtube/youtube.request.js
+
+Loon-specific modifications by ProxyKit, 2026:
+  - Replace the cross-host request URL rewrite with a binary $httpClient relay.
+  - Remove origin-specific transport headers before contacting the Worker.
+  - Relay the Worker's binary response through Loon's request-script API.
+  - Add a small protobuf reader, safe fallback handling, and automated tests.
+
+This file is informational and does not modify the Apache License 2.0 terms.
