@@ -15,6 +15,10 @@
 - 规则文件可按实际格式使用 `.list`、`.conf` 或 `.txt`。
 - 脚本按语言使用 `.js` 等后缀。
 
+## 已收录插件
+
+- `plugins/youtube-enhance.plugin`: YouTube / YouTube Music 去广告与播放增强插件；原作者为 [Maasea](https://github.com/Maasea)，基于 [Maasea/sgmodule](https://github.com/Maasea/sgmodule) 的模块及脚本适配，遵循 Apache-2.0 许可。
+
 ## 已收录规则
 
 - `rules/binance.list`: Binance App 分流规则，基于 iOS App 抓包整理。

@@ -1,0 +1,28 @@
+#!name=YouTube Enhance
+#!desc=适用于 YouTube 与 YouTube Music：去广告、画中画、后台播放及字幕翻译。
+#!author=Maasea（原作者） / ProxyKit（Loon 适配）
+#!homepage=https://github.com/Maasea/sgmodule
+#!loon_version=3.2.1(733)
+#!system=iOS,iPadOS
+#!tag=去广告,YouTube,YouTube Music
+
+# Original author: Maasea
+# Loon adaptation: ProxyKit
+# Source module: https://github.com/Maasea/sgmodule/blob/master/YouTube.Enhance.sgmodule
+# Upstream scripts: https://github.com/Maasea/sgmodule/tree/master/Script/Youtube
+# License: Apache License 2.0 (https://github.com/Maasea/sgmodule/blob/master/LICENSE)
+
+[Argument]
+captionLang = input,"off",tag=字幕翻译语言,desc=填写 Google Translate 语言代码；填写 off 关闭翻译
+blockUpload = switch,true,tag=屏蔽上传按钮,desc=隐藏底部导航栏中的上传按钮
+blockImmersive = switch,true,tag=屏蔽选段按钮,desc=隐藏播放器中的选段按钮
+blockShorts = switch,false,tag=屏蔽 Shorts 按钮,desc=隐藏底部导航栏中的 Shorts 按钮
+debug = switch,false,tag=启用调试模式,desc=输出更多脚本日志，仅排查问题时开启
+
+[Script]
+http-response ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch|log_event)(\?.*)?$ script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.response.js,tag=YouTube Enhance Response,requires-body=true,binary-body-mode=true,timeout=60,argument=[{captionLang},{blockUpload},{blockImmersive},{blockShorts},{debug}],enable=true
+http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&ack.* script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.request.js,tag=YouTube Enhance Init Playback,requires-body=true,binary-body-mode=true,timeout=60,argument=[{captionLang}],enable=true
+http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.request.js,tag=YouTube Enhance Log Event,requires-body=true,binary-body-mode=true,timeout=60,enable=true
+
+[MITM]
+hostname = *.googlevideo.com, youtubei.googleapis.com
