@@ -1,16 +1,16 @@
 /**
- * YouTube Music local InitPlayback fallback for Loon.
+ * YouTube Enhance Standalone InitPlayback fallback for Loon.
  *
+ * The current release only handles YouTube Music requests.
  * This script intentionally does not call a Worker or any other remote helper.
  * SPDX-License-Identifier: Apache-2.0
  * License: ./LICENSE-APACHE-2.0
- * Notice: ./youtube.music.local.NOTICE
+ * Notice: ./youtube.enhance.standalone.NOTICE
  */
 
 (() => {
   "use strict";
 
-  const blockAds = getBooleanArgument("blockAds", true);
   const debugEnabled = getBooleanArgument("debug", false);
 
   function getArgument(name, fallback) {
@@ -49,11 +49,11 @@
 
   function debug(message) {
     if (debugEnabled) {
-      console.log(`[YouTube Music Local Request] ${message}`);
+      console.log(`[YouTube Enhance Standalone Request] ${message}`);
     }
   }
 
-  if (!blockAds || !isYouTubeMusic()) {
+  if (!isYouTubeMusic()) {
     $done({});
     return;
   }

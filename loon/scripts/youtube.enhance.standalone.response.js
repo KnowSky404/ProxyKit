@@ -1,6 +1,7 @@
 /**
- * YouTube Music local protobuf response adapter for Loon.
+ * YouTube Enhance Standalone protobuf response adapter for Loon.
  *
+ * The current release only handles YouTube Music responses.
  * Player, GetWatch, and Guide protocol fields are based on the Apache-2.0
  * YouTube implementation from Maasea/sgmodule. Processing is performed fully
  * inside Loon and does not call an upstream script or third-party Worker.
@@ -9,7 +10,7 @@
  * https://github.com/Maasea/sgmodule/blob/master/Script/Youtube/youtube.response.js
  * SPDX-License-Identifier: Apache-2.0
  * License: ./LICENSE-APACHE-2.0
- * Notice: ./youtube.music.local.NOTICE
+ * Notice: ./youtube.enhance.standalone.NOTICE
  */
 
 (() => {
@@ -29,9 +30,6 @@
   const BACKGROUND_ABILITY_FIELD = 64657230;
 
   const params = {
-    blockAds: getBooleanArgument("blockAds", true),
-    enableBackground: getBooleanArgument("enableBackground", true),
-    enablePiP: getBooleanArgument("enablePiP", true),
     blockImmersive: getBooleanArgument("blockImmersive", true),
     blockUpgrade: getBooleanArgument("blockUpgrade", true),
     debug: getBooleanArgument("debug", false),
@@ -73,7 +71,7 @@
 
   function debug(message) {
     if (params.debug) {
-      console.log(`[YouTube Music Local Response] ${message}`);
+      console.log(`[YouTube Enhance Standalone Response] ${message}`);
     }
   }
 
@@ -218,9 +216,6 @@
   }
 
   function rewritePlaybackTracking(bytes) {
-    if (!params.blockAds) {
-      return { body: bytes, changed: false };
-    }
     return rewriteMessage(bytes, (field) =>
       field.fieldNumber === PAGE_AD_TRACKING_FIELD ? null : undefined,
     );
@@ -248,23 +243,14 @@
   }
 
   function rewritePlayability(bytes) {
-    const appended = [];
-    if (params.enablePiP) {
-      appended.push(pictureInPictureRenderer());
-    }
-    if (params.enableBackground) {
-      appended.push(backgroundRenderer());
-    }
+    const appended = [pictureInPictureRenderer(), backgroundRenderer()];
     return rewriteMessage(
       bytes,
       (field) => {
-        if (params.enablePiP && field.fieldNumber === PIP_RENDERER_FIELD) {
+        if (field.fieldNumber === PIP_RENDERER_FIELD) {
           return null;
         }
-        if (
-          params.enableBackground &&
-          field.fieldNumber === BACKGROUND_RENDERER_FIELD
-        ) {
+        if (field.fieldNumber === BACKGROUND_RENDERER_FIELD) {
           return null;
         }
         return undefined;
@@ -277,7 +263,7 @@
     let sawPlayability = false;
     const appended = [];
     const rewritten = rewriteMessage(bytes, (field) => {
-      if (params.blockAds && PLAYER_AD_FIELDS.has(field.fieldNumber)) {
+      if (PLAYER_AD_FIELDS.has(field.fieldNumber)) {
         return null;
       }
       if (
@@ -302,7 +288,7 @@
       return undefined;
     });
 
-    if (!sawPlayability && (params.enablePiP || params.enableBackground)) {
+    if (!sawPlayability) {
       const result = rewritePlayability(new Uint8Array(0));
       appended.push(encodeLengthDelimited(PLAYER_PLAYABILITY_FIELD, result.body));
     }

@@ -2,15 +2,21 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 
 const requestScript = readFileSync(
-  new URL("../../loon/scripts/youtube.music.local.request.js", import.meta.url),
+  new URL(
+    "../../loon/scripts/youtube.enhance.standalone.request.js",
+    import.meta.url,
+  ),
   "utf8",
 );
 const responseScript = readFileSync(
-  new URL("../../loon/scripts/youtube.music.local.response.js", import.meta.url),
+  new URL(
+    "../../loon/scripts/youtube.enhance.standalone.response.js",
+    import.meta.url,
+  ),
   "utf8",
 );
 const plugin = readFileSync(
-  new URL("../../loon/plugins/youtube-music-enhance.plugin", import.meta.url),
+  new URL("../../loon/plugins/youtube-enhance-standalone.plugin", import.meta.url),
   "utf8",
 );
 
@@ -205,15 +211,15 @@ function outputBody(input, payload) {
   return payload.body || input;
 }
 
-describe("Loon YouTube Music local request adapter", () => {
+describe("Loon YouTube Enhance Standalone request adapter", () => {
   test("has no third-party Worker or upstream runtime script dependency", () => {
     expect(plugin).not.toContain("init-stream.maasea.workers.dev");
     expect(plugin).not.toContain("raw.githubusercontent.com/Maasea");
     expect(plugin).toContain(
-      "script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube.music.local.request.js",
+      "script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube.enhance.standalone.request.js",
     );
     expect(plugin).toContain(
-      "script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube.music.local.response.js",
+      "script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube.enhance.standalone.response.js",
     );
     expect(requestScript).not.toContain("$httpClient");
     expect(responseScript).not.toContain("$httpClient");
@@ -226,8 +232,11 @@ describe("Loon YouTube Music local request adapter", () => {
     expect(payload.response.body).toHaveLength(0);
   });
 
-  test("passes through when local ad blocking is disabled", () => {
-    expect(runRequest({ argument: { blockAds: false } })).toEqual({});
+  test("does not expose a way to disable required ad filtering", () => {
+    expect(runRequest({ argument: { blockAds: false } }).response.status).toBe(
+      200,
+    );
+    expect(plugin).not.toContain("blockAds = switch");
   });
 
   test("does not affect the regular YouTube app", () => {
@@ -237,7 +246,7 @@ describe("Loon YouTube Music local request adapter", () => {
   });
 });
 
-describe("Loon YouTube Music local response adapter", () => {
+describe("Loon YouTube Enhance Standalone response adapter", () => {
   test("removes Player ads and enables background playback and PiP", () => {
     const input = watchBody();
     const output = outputBody(
@@ -286,7 +295,7 @@ describe("Loon YouTube Music local response adapter", () => {
     expect(fieldNumbers(output)).toContain(2);
   });
 
-  test("leaves playback capabilities untouched when their switches are off", () => {
+  test("does not allow required playback capabilities to be disabled", () => {
     const input = playerBody();
     const output = outputBody(
       input,
@@ -300,7 +309,13 @@ describe("Loon YouTube Music local response adapter", () => {
         },
       }),
     );
-    expect(output).toEqual(input);
+    expect(fieldNumbers(output)).not.toContain(7);
+    expect(fieldNumbers(output)).not.toContain(68);
+    const playability = fieldPayload(output, 2);
+    expect(fieldNumbers(playability)).toContain(21);
+    expect(fieldNumbers(playability)).toContain(11);
+    expect(plugin).not.toContain("enableBackground = switch");
+    expect(plugin).not.toContain("enablePiP = switch");
   });
 
   for (const testCase of [

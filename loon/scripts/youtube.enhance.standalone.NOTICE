@@ -1,4 +1,4 @@
-YouTube Music local request and response adapters for Loon
+YouTube Enhance Standalone request and response adapters for Loon
 
 Protocol field paths and identifiers are based on the YouTube response
 implementation from Maasea/sgmodule:
