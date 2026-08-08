@@ -1,5 +1,5 @@
 /**
- * YouTube Enhance Standalone protobuf response adapter for Loon.
+ * YouTube protobuf response adapter for Loon.
  *
  * The current release only handles YouTube Music responses.
  * Player, GetWatch, and Guide protocol fields are based on the Apache-2.0
@@ -10,7 +10,7 @@
  * https://github.com/Maasea/sgmodule/blob/master/Script/Youtube/youtube.response.js
  * SPDX-License-Identifier: Apache-2.0
  * License: ./LICENSE-APACHE-2.0
- * Notice: ./youtube.enhance.standalone.NOTICE
+ * Notice: ./NOTICE
  */
 
 (() => {
@@ -71,7 +71,7 @@
 
   function debug(message) {
     if (params.debug) {
-      console.log(`[YouTube Enhance Standalone Response] ${message}`);
+      console.log(`[YouTube Response] ${message}`);
     }
   }
 

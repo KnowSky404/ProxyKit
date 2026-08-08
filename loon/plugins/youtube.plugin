@@ -1,0 +1,26 @@
+#!name=YouTube
+#!desc=YouTube 与 YouTube Music 去广告及播放增强；当前版本仅适配 YouTube Music，运行依赖全部托管于 ProxyKit。
+#!author=KnowSky404
+#!homepage=https://github.com/KnowSky404
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
+#!loon_version=3.2.1(733)
+#!system=iOS,iPadOS
+#!tag=去广告,YouTube,YouTube Music,后台播放,画中画
+
+# Current support: YouTube Music only. YouTube support is planned.
+# Author: https://github.com/KnowSky404
+# Do not enable together with youtube-enhance.plugin.
+# All runtime scripts are hosted in KnowSky404/ProxyKit.
+# No third-party runtime script or Worker is used.
+
+[Argument]
+blockImmersive = switch,true,tag=屏蔽 Music 选段按钮,desc=YouTube Music 专用：隐藏播放器中的选段入口
+blockUpgrade = switch,true,tag=屏蔽 Music 升级按钮,desc=YouTube Music 专用：隐藏升级入口
+debug = switch,false,tag=启用调试模式,desc=仅排查问题时开启本地脚本日志
+
+[Script]
+http-response ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(player|get_watch|guide)(\?.*)?$ script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube/response.js,tag=YouTube Response,requires-body=true,binary-body-mode=true,timeout=60,argument=[{blockImmersive},{blockUpgrade},{debug}],enable=true
+http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&ack.* script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube/request.js,tag=YouTube Init Playback,requires-body=true,binary-body-mode=true,timeout=60,argument=[{debug}],enable=true
+
+[MITM]
+hostname = *.googlevideo.com, youtubei.googleapis.com

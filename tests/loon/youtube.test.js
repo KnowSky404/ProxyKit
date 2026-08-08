@@ -3,20 +3,20 @@ import { readFileSync } from "node:fs";
 
 const requestScript = readFileSync(
   new URL(
-    "../../loon/scripts/youtube.enhance.standalone.request.js",
+    "../../loon/scripts/youtube/request.js",
     import.meta.url,
   ),
   "utf8",
 );
 const responseScript = readFileSync(
   new URL(
-    "../../loon/scripts/youtube.enhance.standalone.response.js",
+    "../../loon/scripts/youtube/response.js",
     import.meta.url,
   ),
   "utf8",
 );
 const plugin = readFileSync(
-  new URL("../../loon/plugins/youtube-enhance-standalone.plugin", import.meta.url),
+  new URL("../../loon/plugins/youtube.plugin", import.meta.url),
   "utf8",
 );
 
@@ -211,15 +211,22 @@ function outputBody(input, payload) {
   return payload.body || input;
 }
 
-describe("Loon YouTube Enhance Standalone request adapter", () => {
+describe("Loon YouTube request adapter", () => {
+  test("uses the canonical YouTube name and author profile", () => {
+    expect(plugin).toContain("#!name=YouTube");
+    expect(plugin).toContain("#!author=KnowSky404");
+    expect(plugin).toContain("#!homepage=https://github.com/KnowSky404");
+    expect(plugin).not.toContain("Standalone");
+  });
+
   test("has no third-party Worker or upstream runtime script dependency", () => {
     expect(plugin).not.toContain("init-stream.maasea.workers.dev");
     expect(plugin).not.toContain("raw.githubusercontent.com/Maasea");
     expect(plugin).toContain(
-      "script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube.enhance.standalone.request.js",
+      "script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube/request.js",
     );
     expect(plugin).toContain(
-      "script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube.enhance.standalone.response.js",
+      "script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube/response.js",
     );
     expect(requestScript).not.toContain("$httpClient");
     expect(responseScript).not.toContain("$httpClient");
@@ -246,7 +253,7 @@ describe("Loon YouTube Enhance Standalone request adapter", () => {
   });
 });
 
-describe("Loon YouTube Enhance Standalone response adapter", () => {
+describe("Loon YouTube response adapter", () => {
   test("removes Player ads and enables background playback and PiP", () => {
     const input = watchBody();
     const output = outputBody(

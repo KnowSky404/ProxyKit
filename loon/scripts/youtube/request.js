@@ -1,11 +1,11 @@
 /**
- * YouTube Enhance Standalone InitPlayback fallback for Loon.
+ * YouTube InitPlayback fallback for Loon.
  *
  * The current release only handles YouTube Music requests.
  * This script intentionally does not call a Worker or any other remote helper.
  * SPDX-License-Identifier: Apache-2.0
  * License: ./LICENSE-APACHE-2.0
- * Notice: ./youtube.enhance.standalone.NOTICE
+ * Notice: ./NOTICE
  */
 
 (() => {
@@ -49,7 +49,7 @@
 
   function debug(message) {
     if (debugEnabled) {
-      console.log(`[YouTube Enhance Standalone Request] ${message}`);
+      console.log(`[YouTube Request] ${message}`);
     }
   }
 

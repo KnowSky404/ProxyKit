@@ -1,10 +1,10 @@
-YouTube Enhance Standalone request and response adapters for Loon
+YouTube request and response adapters for Loon
 
 Protocol field paths and identifiers are based on the YouTube response
 implementation from Maasea/sgmodule:
   https://github.com/Maasea/sgmodule/blob/master/Script/Youtube/youtube.response.js
 
 Copyright 2023 Maasea
-Copyright 2026 ProxyKit contributors
+Copyright 2026 KnowSky404
 
 Licensed under the Apache License, Version 2.0. See LICENSE-APACHE-2.0.
