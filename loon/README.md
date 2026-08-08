@@ -18,7 +18,7 @@
 ## 已收录插件
 
 - `plugins/youtube-enhance.plugin`: YouTube / YouTube Music 去广告与播放增强插件；原作者为 [Maasea](https://github.com/Maasea)，基于 [Maasea/sgmodule](https://github.com/Maasea/sgmodule) 的模块及脚本适配，使用仓库内的 Loon 专用 `scripts/youtube.request.js` 中继 InitPlayback Worker 响应，遵循 Apache-2.0 许可。
-- `plugins/youtube-music-local.plugin`: YouTube Music 本地实验插件；不调用第三方 Worker 或远程脚本，通过本地 InitPlayback 回退和 protobuf 响应处理实现去广告、后台播放、画中画及 Music 菜单开关。启用前需将 `youtube.music.local.request.js` 和 `youtube.music.local.response.js` 导入 Loon 本地脚本，并保持文件名不变；不要与 `youtube-enhance.plugin` 同时启用。
+- `plugins/youtube-music-enhance.plugin`: YouTube Music 独立增强插件；可通过远程链接直接安装，运行脚本全部托管于本项目，不调用第三方 Worker 或上游远程脚本。通过 InitPlayback 回退和 protobuf 响应处理实现去广告、后台播放、画中画及 Music 菜单开关；不要与 `youtube-enhance.plugin` 同时启用。
 
 ## 已收录脚本
 

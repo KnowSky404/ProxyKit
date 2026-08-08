@@ -10,7 +10,7 @@ const responseScript = readFileSync(
   "utf8",
 );
 const plugin = readFileSync(
-  new URL("../../loon/plugins/youtube-music-local.plugin", import.meta.url),
+  new URL("../../loon/plugins/youtube-music-enhance.plugin", import.meta.url),
   "utf8",
 );
 
@@ -209,9 +209,12 @@ describe("Loon YouTube Music local request adapter", () => {
   test("has no third-party Worker or upstream runtime script dependency", () => {
     expect(plugin).not.toContain("init-stream.maasea.workers.dev");
     expect(plugin).not.toContain("raw.githubusercontent.com/Maasea");
-    expect(plugin).not.toMatch(/script-path=https?:/);
-    expect(plugin).toContain("script-path=youtube.music.local.request.js");
-    expect(plugin).toContain("script-path=youtube.music.local.response.js");
+    expect(plugin).toContain(
+      "script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube.music.local.request.js",
+    );
+    expect(plugin).toContain(
+      "script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube.music.local.response.js",
+    );
     expect(requestScript).not.toContain("$httpClient");
     expect(responseScript).not.toContain("$httpClient");
   });
