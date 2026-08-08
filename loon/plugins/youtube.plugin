@@ -1,7 +1,7 @@
 #!name=YouTube
 #!desc=YouTube 与 YouTube Music 去广告及播放增强；当前版本仅适配 YouTube Music，运行依赖全部托管于 ProxyKit。
 #!author=KnowSky404
-#!homepage=https://github.com/KnowSky404
+#!homepage=https://github.com/KnowSky404/ProxyKit
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
 #!loon_version=3.2.1(733)
 #!system=iOS,iPadOS

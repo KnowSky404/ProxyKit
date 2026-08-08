@@ -215,7 +215,10 @@ describe("Loon YouTube request adapter", () => {
   test("uses the canonical YouTube name and author profile", () => {
     expect(plugin).toContain("#!name=YouTube");
     expect(plugin).toContain("#!author=KnowSky404");
-    expect(plugin).toContain("#!homepage=https://github.com/KnowSky404");
+    expect(plugin).toContain(
+      "#!homepage=https://github.com/KnowSky404/ProxyKit",
+    );
+    expect(plugin).toContain("# Author: https://github.com/KnowSky404");
     expect(plugin).not.toContain("Standalone");
   });
 
