@@ -1,0 +1,53 @@
+# Temporary and backup files
+tmp*
+*.tmp
+*.temp
+*.bak
+*.orig
+*~
+
+# macOS and Windows metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+Desktop.ini
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# JavaScript dependencies, caches, and test output
+node_modules/
+.bun/
+.cache/
+coverage/
+.nyc_output/
+
+# Runtime logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun-debug.log*
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Network captures can contain cookies, tokens, and account data
+*.har
+*.pcap
+*.pcapng
+*.chls
