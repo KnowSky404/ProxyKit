@@ -226,10 +226,10 @@ describe("Loon YouTube request adapter", () => {
     expect(plugin).not.toContain("init-stream.maasea.workers.dev");
     expect(plugin).not.toContain("raw.githubusercontent.com/Maasea");
     expect(plugin).toContain(
-      "script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube/request.js",
+      'script("https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube/request.js"',
     );
     expect(plugin).toContain(
-      "script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube/response.js",
+      'script("https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube/response.js"',
     );
     expect(requestScript).not.toContain("$httpClient");
     expect(responseScript).not.toContain("$httpClient");

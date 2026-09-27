@@ -3,7 +3,7 @@
 #!author=Maasea（原作者） / ProxyKit（Loon 适配）
 #!homepage=https://github.com/KnowSky404/ProxyKit
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
-#!loon_version=3.2.1(733)
+#!loon_version=3.5.1(983)
 #!system=iOS,iPadOS
 #!tag=去广告,YouTube,YouTube Music
 
@@ -23,9 +23,9 @@ blockShorts = switch,false,tag=屏蔽 Shorts 按钮,desc=隐藏底部导航栏�
 debug = switch,false,tag=启用调试模式,desc=输出更多脚本日志，仅排查问题时开启
 
 [Script]
-http-response ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch|log_event)(\?.*)?$ script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.response.js,tag=YouTube Enhance Response,requires-body=true,binary-body-mode=true,timeout=60,argument=[{captionLang},{blockUpload},{blockImmersive},{blockShorts},{debug}],enable=true
-http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&ack.* script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube.request.js,tag=YouTube Enhance Init Playback,requires-body=true,binary-body-mode=true,timeout=60,argument=[{captionLang},{blockUpload},{blockImmersive},{blockShorts},{debug}],enable=true
-http-request ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube.request.js,tag=YouTube Enhance Log Event,requires-body=true,binary-body-mode=true,timeout=60,argument=[{debug}],enable=true
+response if ${url} ~= /^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch|log_event)(\?.*)?$/i then script("https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.response.js", {${captionLang}, ${blockUpload}, ${blockImmersive}, ${blockShorts}, ${debug}}) with tag="YouTube Enhance Response", requires_body=true, binary_body_mode=true, timeout=60, enable=true
+request if ${url} ~= /^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&ack.*/i then script("https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube.request.js", {${captionLang}, ${blockUpload}, ${blockImmersive}, ${blockShorts}, ${debug}}) with tag="YouTube Enhance Init Playback", requires_body=true, binary_body_mode=true, timeout=60, enable=true
+request if ${url} ~= /^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event/i then script("https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube.request.js", {${debug}}) with tag="YouTube Enhance Log Event", requires_body=true, binary_body_mode=true, timeout=60, enable=true
 
 [MITM]
 hostname = *.googlevideo.com, youtubei.googleapis.com

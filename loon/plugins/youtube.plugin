@@ -3,7 +3,7 @@
 #!author=KnowSky404
 #!homepage=https://github.com/KnowSky404/ProxyKit
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
-#!loon_version=3.2.1(733)
+#!loon_version=3.5.1(983)
 #!system=iOS,iPadOS
 #!tag=去广告,YouTube,YouTube Music,后台播放,画中画
 
@@ -19,8 +19,8 @@ blockUpgrade = switch,true,tag=屏蔽 Music 升级按钮,desc=YouTube Music 专�
 debug = switch,false,tag=启用调试模式,desc=仅排查问题时开启本地脚本日志
 
 [Script]
-http-response ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(player|get_watch|guide)(\?.*)?$ script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube/response.js,tag=YouTube Response,requires-body=true,binary-body-mode=true,timeout=60,argument=[{blockImmersive},{blockUpgrade},{debug}],enable=true
-http-request ^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&ack.* script-path=https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube/request.js,tag=YouTube Init Playback,requires-body=true,binary-body-mode=true,timeout=60,argument=[{debug}],enable=true
+response if ${url} ~= /^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(player|get_watch|guide)(\?.*)?$/i then script("https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube/response.js", {${blockImmersive}, ${blockUpgrade}, ${debug}}) with tag="YouTube Response", requires_body=true, binary_body_mode=true, timeout=60, enable=true
+request if ${url} ~= /^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&ack.*/i then script("https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/scripts/youtube/request.js", {${debug}}) with tag="YouTube Init Playback", requires_body=true, binary_body_mode=true, timeout=60, enable=true
 
 [MITM]
 hostname = *.googlevideo.com, youtubei.googleapis.com
