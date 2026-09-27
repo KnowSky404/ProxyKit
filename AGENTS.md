@@ -14,6 +14,15 @@
 - 两端文件应使用相同的基础文件名；转换语法时保持匹配目标、启用状态、顺序和语义一致。
 - 新增、重命名或删除规则文件时，同步更新 `loon/README.md`、`quantumultx/README.md` 以及其他受影响的索引文档。
 
+## Loon 插件语法
+
+- 新增、修改或改编 Loon 插件时，相关配置一律使用 Loon 官方当前新版语法，不得新增旧格式或将已迁移配置退回旧格式；配套配置片段、文档示例和测试须保持一致。
+- `[Rewrite]` 遵循 [Rewrite v2 官方文档](https://nsloon.app/docs/Rewrite/rewrite_v2/)，使用 `request/response if <condition> then <action>`，需要多个 Action 时使用 `|` 连接。
+- `[Script]` 遵循 [Script v2 官方文档](https://nsloon.app/docs/Script/script_v2/)，HTTP 脚本使用 `request/response if <condition> then script(...) with ...`；Cron、Network Changed 和 Generic 脚本同样使用对应触发器配合 `then script(...)`，属性通过可选的 `with` 配置。
+- Script 属性使用新版名称，例如 `requires_body`、`binary_body_mode`、`img_url` 和 `enable`；插件对象参数使用 `{${参数名}}` 传入。不得使用旧式 `http-request`、`http-response`、`script-path=` 或旧式参数列表。
+- 迁移旧配置时保留匹配范围、顺序、参数类型和运行行为；旧 HTTP Script 默认忽略大小写，迁移时须显式保留正则 `i` 标志。不要将配置属性改名规则套用到 JavaScript API 字段。
+- `#!loon_version` 和 README 必须与所用语法及功能的最低版本一致；Rewrite v2 至少需要 Loon 3.5.1（978），Script v2 至少需要 Loon 3.5.1（983），使用更晚引入的能力时同步提高最低版本。编写时核对官方文档，不以旧示例作为语法依据。
+
 ## Loon 插件的命名与元数据
 
 - 新增或重新命名的项目自有插件使用简洁、稳定的产品名，不在文件名、`#!name`、脚本标签或日志前缀中加入 `Enhance`、`Standalone` 等实现阶段或部署方式限定词，除非任务明确要求。文件名使用对应产品的小写规范名，例如 `plugins/youtube.plugin`。
@@ -36,4 +45,5 @@
 - 对比所有 App 的规则文件清单，确认没有仅存在于单一 App 目录的文件。
 - 将 App 专属关键字归一化后对比同名规则，确认有效规则和注释掉的候选规则均无缺失或意外差异。
 - 检查每个目标 App 的规则语法，避免把另一个 App 的关键字直接复制过来。
+- 检查 Loon 插件及配套示例使用新版 Rewrite / Script 语法，确认属性名、参数引用和最低版本声明一致。
 - 检查插件内所有 Raw GitHub 路径均与仓库中的实际文件路径一致，并确认 README 中的安装入口、支持范围和依赖说明已经同步。
