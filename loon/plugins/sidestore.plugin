@@ -1,0 +1,24 @@
+#!name=SideStore
+#!desc=通过 10.7.0.1 本机回环替代 SideStore 所需的 LocalDevVPN；需 Loon 3.5.3(1007)+，启用后重连 VPN。关闭 IPv6 VIF，待真机验证。
+#!author=KnowSky404
+#!homepage=https://github.com/KnowSky404/ProxyKit
+#!icon=https://sidestore.io/assets/icon.png
+#!loon_version=3.5.3(1007)
+#!system=iOS,iPadOS
+#!date=2026-11-02
+#!tag=SideStore,本机回环,侧载,续签
+
+# Author: https://github.com/KnowSky404
+# Reference: Luke - https://bssn520.github.io/p/22/
+# Official syntax: https://nsloon.app/docs/Plugin/#ip-rewrite
+# Official example: https://t.me/s/loonnews?q=1007
+# Disable LocalDevVPN / SideStore WireGuard, then reconnect Loon after enabling.
+# ipv6-vif = off affects the entire Loon TUN while this plugin is enabled.
+# Configuration checked against official docs; device validation is still pending.
+
+[General]
+include-tun = 10.7.0.1/32
+ipv6-vif = off
+
+[IP Rewrite]
+10.7.0.1 = reflect
