@@ -10,6 +10,7 @@
 - [`rules/bitget-wallet.json`](rules/bitget-wallet.json) / [`rules/bitget-wallet.srs`](rules/bitget-wallet.srs): Bitget Wallet App 分流规则。
 - [`rules/bybit.json`](rules/bybit.json) / [`rules/bybit.srs`](rules/bybit.srs): Bybit App 分流规则。
 - [`rules/ur.json`](rules/ur.json) / [`rules/ur.srs`](rules/ur.srs): UR App 分流规则。
+- [`rules/wechat.json`](rules/wechat.json) / [`rules/wechat.srs`](rules/wechat.srs): 微信 / WeChat 分流规则，迁自手工维护的 sing-box 配置；保留共享腾讯端点和整个 `43.160.0.0/12` 网段，具体迁移边界见下文。
 - [`rules/wise.json`](rules/wise.json) / [`rules/wise.srs`](rules/wise.srs): Wise App 分流规则。
 
 来源和候选项见对应 YAML；JSON/SRS 仅包含启用的匹配条件，不包含策略、注释或禁用条件。现阶段文件很小、更新频率低，因此将 SRS 和 JSON 一起提交，保持 `main/sing-box/rules/<name>.srs` 稳定 Raw URL；不引入 Release Assets 的更新与 URL 管理成本。
@@ -38,6 +39,35 @@
 
 此片段采用 sing-box 1.14.4 的显式 `action: "route"` 写法，需要 1.11.0 及以上；1.10.x 消费者应省略 `action` 字段，规则集本身仍兼容。升级已有主配置时参照[官方迁移指南](https://sing-box.sagernet.org/migration/)。使用 Source JSON 时将 `format` 改为 `source` 并改用 `.json` URL。[官方 Rule Set 文档](https://sing-box.sagernet.org/configuration/rule-set/) 说明加载方式。
 
-**Binance 的 IP 规则带有 Loon `no-resolve` 语义。** sing-box headless 规则不能携带这一开关；引用该集合时，主配置不得在此前通过 `action: "resolve"` 等操作预先将域名转成 IP（旧版配置也应检查 inbound domain strategy）。不要启用按源 IP 匹配该规则集，也不要把包含 IP 条件的集合直接当成等价 DNS 规则。此约束保存在源文件显式兼容声明中，不能用一份规则集覆盖所有主配置的解析语义。详见 [规则格式与语义限制](../docs/rule-format.md)。
+**Binance 和 WeChat 的 IP 规则带有 Loon `no-resolve` 语义。** sing-box headless 规则不能携带这一开关；引用这些集合时，主配置不得在此前通过 `action: "resolve"` 等操作预先将域名转成 IP（旧版配置也应检查 inbound domain strategy）。不要启用按源 IP 匹配这些规则集，也不要把包含 IP 条件的集合直接当成等价 DNS 规则。此约束保存在源文件显式兼容声明中，不能用一份规则集覆盖所有主配置的解析语义。详见 [规则格式与语义限制](../docs/rule-format.md)。
+
+## WeChat 迁移说明
+
+`wechat` 来自 [手工维护的 sing-box 路由规则](https://microbin.knowsky.uk/raw/bqWQ3e)，保留全部 **8 条精确域名、22 条域名后缀和 1 条 IPv4 CIDR**，各数组内顺序不变。不扩大精确域名，也不缩减原有共享服务及 `43.160.0.0/12`；该网段并非微信独占，匹配到的其他业务也会使用此集合绑定的策略。
+
+原配置的 `ip_is_private: true` 匹配所有非公网目标，按 [官方路由匹配语义](https://sing-box.sagernet.org/configuration/route/rule/#default-fields)与域名/IP 条件为 OR 关系。它属于全局路由设置，不加入公开微信集合；`action` 和 `outbound: "Direct"` 也由使用方主配置绑定。替换原本内联的微信规则时，可在原位置拆成以下两条，保留对现有其他规则的优先级（`Direct` 必须是主配置中已有的 outbound）：
+
+```json
+{
+  "route": {
+    "rule_set": [
+      {
+        "type": "remote",
+        "tag": "proxykit-wechat",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/sing-box/rules/wechat.srs"
+      }
+    ],
+    "rules": [
+      { "ip_is_private": true, "action": "route", "outbound": "Direct" },
+      { "rule_set": ["proxykit-wechat"], "action": "route", "outbound": "Direct" }
+    ]
+  }
+}
+```
+
+这是追加到现有配置的片段，不能覆盖其他 `rule_set` 和 `rules`。与上方引用示例相同，显式 `action` 写法需要 sing-box 1.11.0 及以上；1.10.x 省略该字段。
+
+原始片段未编码 `no-resolve`。本次为三端生成采用仓库现有的不预解析约束：YAML 中 CIDR 显式使用 `no_resolve: true`，并声明 QX 兼容策略字段及 sing-box 外部解析前提。**匹配集合保留，不承诺与任意原主配置的 DNS 行为完全相同**；请按上述约束检查已有主配置。Loon/QX 使用各自主配置管理私网直连。
 
 构建、编译与校验命令见 [rulegen](../tools/rulegen/README.md)；不得手工修改 JSON 或自行编码 SRS。

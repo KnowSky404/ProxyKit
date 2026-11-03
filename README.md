@@ -20,7 +20,7 @@ docs/                     # 架构、规则格式和私有复用指南
 
 ## 引用公开规则
 
-目前收录 `binance`、`bitget-wallet`、`bybit`、`ur`、`wise` 五组。以 Wise 为例：
+目前收录 `binance`、`bitget-wallet`、`bybit`、`ur`、`wechat`、`wise` 六组。以 Wise 为例：
 
 - [Loon 规则](https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/loon/rules/wise.list)
 - [Quantumult X 规则](https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/quantumultx/filters/wise.list)
