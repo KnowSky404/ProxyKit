@@ -14,7 +14,7 @@ flowchart LR
     V --> L[loon/rules/*.list]
     V --> Q[quantumultx/filters/*.list]
     V --> J[sing-box/rules/*.json]
-    J --> C[官方 sing-box 1.10.7]
+    J --> C[官方 sing-box 1.14.4]
     C --> S[sing-box/rules/*.srs]
 ```
 
@@ -32,7 +32,7 @@ Schema v1 支持四种匹配条件，数组定义分组与规则顺序，结构�
 
 Loon、Quantumult X 和 sing-box 的 DNS 求值机制并不完全等价。Binance 的 `no-resolve` 不可当成普通文本后缀无条件复制到每端：YAML 必须显式声明兼容选择，未知或无法接受的语义直接报错。当前 QX 保留历史第三字段文本，并要求订阅绑定 `force-policy`；sing-box 要求调用方遵守不预解析约束。详见 [规则格式](rule-format.md)。匹配集合一致性的测试不代表所有客户端主配置下 DNS 行为一致。
 
-sing-box 输出 version 2，消费者最低 1.10.0；固定官方 1.10.7 编译，避免换用不同编译器导致二进制漂移。当前五组产物很小、维护频率低，SRS 直接提交，使用稳定 Raw URL。未来若体积显著增长，再单独设计 Release 发布迁移，不能直接破坏已有订阅地址。
+sing-box 输出 version 2，消费者最低 1.10.0；固定官方 1.14.4 编译，避免换用不同编译器导致二进制漂移。当前五组产物很小、维护频率低，SRS 直接提交，使用稳定 Raw URL。未来若体积显著增长，再单独设计 Release 发布迁移，不能直接破坏已有订阅地址。
 
 ## CI 数据流
 

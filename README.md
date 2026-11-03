@@ -31,7 +31,9 @@ Loon 在订阅配置中绑定策略；Quantumult X 在 `filter_remote` 中显式
 
 ## 添加和生成规则
 
-需要 [Bun](https://bun.sh/) **1.4.4**；完整构建还需要官方 **sing-box 1.10.7** CLI。消费者加载生成的 JSON/SRS 最低需要 sing-box **1.10.0**（规则集格式 version 2）。生成器不会自动下载工具或规则。
+需要 [Bun](https://bun.sh/) **1.4.4**；完整构建还需要官方 **sing-box 1.14.4** CLI。消费者加载生成的 JSON/SRS 最低需要 sing-box **1.10.0**（规则集格式 version 2）。生成器不会自动下载工具或规则。
+
+截至 2026-11-03，以上为官方最新稳定版：[Bun 1.4.4](https://github.com/oven-sh/bun/releases/tag/bun-v1.4.4)、[sing-box 1.14.4](https://github.com/SagerNet/sing-box/releases/tag/v1.14.4)。Bun 运行时、类型声明和 CI 均固定为 1.4.4；sing-box 安装与校验方式见 [rulegen 文档](tools/rulegen/README.md)。
 
 ```sh
 bun install --frozen-lockfile

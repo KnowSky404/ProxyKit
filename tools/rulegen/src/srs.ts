@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 // A compiler change may change bytes even when source schema compatibility is retained.
-export const SING_BOX_VERSION = "1.10.7";
+export const SING_BOX_VERSION = "1.14.4";
 export const SING_BOX_MIN_READER = "1.10.0";
 
 export class CompilerError extends Error {
@@ -19,7 +19,7 @@ function safeFailureReason(stderr: string): string {
   if (!message) return "unclassified compiler error";
   if (/^unknown rule-set version: \d+$/.test(message)) return "unsupported source rule-set version";
   if (/^version: json: cannot unmarshal /.test(message)) return "invalid source version field";
-  if (/^(?:unexpected EOF|unexpected end of JSON input)$/.test(message)) return "incomplete source JSON";
+  if (/^(?:unexpected EOF|unexpected end of JSON input)(?:: row \d+, column \d+)?$/.test(message)) return "incomplete source JSON";
   if (/^invalid character '/.test(message)) return "invalid source JSON";
   if (/^ipcidr: parse \[\d+\]: netip\.ParsePrefix\(/.test(message)) return "invalid IP CIDR matcher";
   if (/^rules\[\d+\](?:\.[a-z_]+)*: json: (?:unknown field|cannot unmarshal) /.test(message)) return "invalid source rule field";

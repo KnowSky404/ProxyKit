@@ -1,6 +1,8 @@
 # sing-box
 
-`rules/` 中的 `.json`（Source Rule Set）及 `.srs`（Binary Rule Set）由 `shared/rules/*.yaml` 生成。消费者最低 **sing-box 1.10.0**，使用规则集格式 **version 2**；仓库和 CI 固定官方 **1.10.7** 编译器以保证可重复构建。
+`rules/` 中的 `.json`（Source Rule Set）及 `.srs`（Binary Rule Set）由 `shared/rules/*.yaml` 生成。消费者最低 **sing-box 1.10.0**，使用规则集格式 **version 2**；仓库和 CI 固定官方 **1.14.4** 编译器以保证可重复构建。
+
+[1.14.4](https://github.com/SagerNet/sing-box/releases/tag/v1.14.4) 为 2026-11-03 核对的最新稳定版。已用该版本重新编译、解析和匹配验证全部规则；五组 SRS 字节与升级前一致。当前条件继续采用 version 2，消费者最低版本保持 1.10.0；[上游更高格式版本](https://sing-box.sagernet.org/configuration/rule-set/source-format/)新增的条件不在当前生成范围内。
 
 ## 已收录规则
 
@@ -28,14 +30,14 @@
       }
     ],
     "rules": [
-      { "rule_set": ["proxykit-wise"], "outbound": "YOUR_OUTBOUND" }
+      { "rule_set": ["proxykit-wise"], "action": "route", "outbound": "YOUR_OUTBOUND" }
     ]
   }
 }
 ```
 
-此片段采用 1.10.x 的路由写法；新版本应按其官方配置迁移指南填写路由动作。使用 Source JSON 时将 `format` 改为 `source` 并改用 `.json` URL。[官方 Rule Set 文档](https://sing-box.sagernet.org/configuration/rule-set/) 说明加载方式。
+此片段采用 sing-box 1.14.4 的显式 `action: "route"` 写法，需要 1.11.0 及以上；1.10.x 消费者应省略 `action` 字段，规则集本身仍兼容。升级已有主配置时参照[官方迁移指南](https://sing-box.sagernet.org/migration/)。使用 Source JSON 时将 `format` 改为 `source` 并改用 `.json` URL。[官方 Rule Set 文档](https://sing-box.sagernet.org/configuration/rule-set/) 说明加载方式。
 
-**Binance 的 IP 规则带有 Loon `no-resolve` 语义。** sing-box headless 规则不能携带这一开关；引用该集合时，主配置不得在此前通过 inbound domain strategy 或路由解析预先将域名转成 IP。不要启用按源 IP 匹配该规则集，也不要把包含 IP 条件的集合直接当成等价 DNS 规则。此约束保存在源文件显式兼容声明中，不能用一份规则集覆盖所有主配置的解析语义。详见 [规则格式与语义限制](../docs/rule-format.md)。
+**Binance 的 IP 规则带有 Loon `no-resolve` 语义。** sing-box headless 规则不能携带这一开关；引用该集合时，主配置不得在此前通过 `action: "resolve"` 等操作预先将域名转成 IP（旧版配置也应检查 inbound domain strategy）。不要启用按源 IP 匹配该规则集，也不要把包含 IP 条件的集合直接当成等价 DNS 规则。此约束保存在源文件显式兼容声明中，不能用一份规则集覆盖所有主配置的解析语义。详见 [规则格式与语义限制](../docs/rule-format.md)。
 
 构建、编译与校验命令见 [rulegen](../tools/rulegen/README.md)；不得手工修改 JSON 或自行编码 SRS。

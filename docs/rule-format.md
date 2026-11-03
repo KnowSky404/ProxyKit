@@ -117,4 +117,4 @@ bun run typecheck
 bun test
 ```
 
-修改 YAML、生成全部客户端、检查匹配与候选项、更新索引，随后提交源和产物。官方 [Source Format 文档](https://sing-box.sagernet.org/configuration/rule-set/source-format/)说明格式版本和编译命令；本项目固定 version 2、最低消费者 1.10.0 和编译器 1.10.7，不随上游最新 Schema 自动升级。
+修改 YAML、生成全部客户端、检查匹配与候选项、更新索引，随后提交源和产物。官方 [Source Format 文档](https://sing-box.sagernet.org/configuration/rule-set/source-format/)说明格式版本和编译命令；本项目固定 version 2、最低消费者 1.10.0 和编译器 1.14.4，不随上游最新 Schema 自动升级。

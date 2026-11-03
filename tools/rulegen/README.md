@@ -4,7 +4,21 @@ Bun + TypeScript 规则生成器。入口是 `src/cli.ts`，直接运行源码�
 
 ## 安装与命令
 
-使用 Bun **1.4.4** 和官方 sing-box **1.10.7**。默认输入和输出基于 CLI 模块所在的仓库根目录定位，不依赖当前工作目录。
+使用 Bun **1.4.4** 和官方 sing-box **1.14.4**。默认输入和输出基于 CLI 模块所在的仓库根目录定位，不依赖当前工作目录。
+
+这两个版本为 2026-11-03 核对的最新稳定版；Bun 的 `@types/bun` 同步固定为 1.4.4。Bun 安装方式见[官方文档](https://bun.com/docs/installation)，安装后用 `bun --version` 确认版本。Linux x86_64 可按以下方式安装官方 sing-box，其他平台从 [1.14.4 Release](https://github.com/SagerNet/sing-box/releases/tag/v1.14.4) 选择对应归档及 SHA256：
+
+```sh
+mkdir -p /tmp/proxykit-toolchain
+curl --fail --silent --show-error --location --retry 3 \
+  https://github.com/SagerNet/sing-box/releases/download/v1.14.4/sing-box-1.14.4-linux-amd64.tar.gz \
+  --output /tmp/proxykit-toolchain/sing-box.tar.gz
+echo '699a1b510aa4396b2176d32d1181920399ebf1e267835da6f3b598d0f7c24968  /tmp/proxykit-toolchain/sing-box.tar.gz' | sha256sum --check
+tar -xzf /tmp/proxykit-toolchain/sing-box.tar.gz -C /tmp/proxykit-toolchain
+export PATH="/tmp/proxykit-toolchain/sing-box-1.14.4-linux-amd64:$PATH"
+export SING_BOX_BIN="/tmp/proxykit-toolchain/sing-box-1.14.4-linux-amd64/sing-box"
+sing-box version
+```
 
 ```sh
 bun install --frozen-lockfile
@@ -40,7 +54,9 @@ bun /opt/ProxyKit/tools/rulegen/src/cli.ts build \
 bun tools/rulegen/src/cli.ts build --target loon,quantumultx --output /tmp/proxykit-rules
 ```
 
-选择 sing-box 目标时同时生成 JSON 和 SRS；编译器缺失、版本不符、编译失败或解析验证失败均不能当作成功。为保证 SRS 字节可重复，编译器固定为 1.10.7；升级须同时更新 CI 校验和、文档、测试及全部产物。消费者最低 1.10.0，与构建工具的固定版本分别管理。
+选择 sing-box 目标时同时生成 JSON 和 SRS；编译器缺失、版本不符、编译失败或解析验证失败均不能当作成功。为保证 SRS 字节可重复，编译器固定为 1.14.4；升级须同时更新 CI 校验和、文档、测试及全部产物。消费者最低 1.10.0，与构建工具的固定版本分别管理。
+
+本次从 1.10.7 升级到 1.14.4 后已重新生成并通过官方 CLI 解析全部五组 SRS；输出字节与原产物一致。继续使用 Source Rule Set version 2：当前域名和 CIDR 条件不需要更高格式版本，升级编译器不提高消费者最低版本。
 
 ## 校验和维护
 
