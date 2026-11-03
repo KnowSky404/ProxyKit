@@ -51,7 +51,7 @@
 - Schema 变更同步更新校验器、类型、目标渲染、测试与 `docs/rule-format.md`；未知字段、重复 YAML 键、非法域名/CIDR、重复条件、冲突解析选项及空有效集合必须失败，不能静默纠正或丢弃规则。
 - 规则数组决定顺序；来源、元数据、分组、注释和禁用候选项不得丢失。历史迁移快照仅作为回归证据，不构成第二份维护源；后续有意改变规则必须明确记录预期差异。
 - `no-resolve` 必须显式处理客户端语义差异。Loon 保留标志；QX 历史第三字段仅按 `legacy-policy-token` 兼容声明保留，并要求订阅 `force-policy`，不得宣称其为 QX DNS 开关。sing-box CIDR 要求 `no_resolve: true` 和 `require-no-pre-resolution` 声明；主配置不得提前解析。不能将此集成前提描述成无条件跨端 DNS 等价。
-- sing-box 使用 Source Rule Set version 2、最低消费者 1.10.0；编译器固定官方 1.10.7。禁止自行编码 SRS，实际编译并用官方 CLI 解析验证。升级编译器时同步更新下载校验和、CI、文档、测试和全部二进制产物。
+- sing-box 使用 Source Rule Set version 2、最低消费者 1.10.0；编译器固定官方 1.14.4。禁止自行编码 SRS，实际编译并用官方 CLI 解析验证。升级编译器时同步更新下载校验和、CI、文档、测试和全部二进制产物。
 - CLI 必须支持仓库外运行与显式输入/输出目录，不从运行时网络获取规则，不将私人 YAML、域名、IP、Token 或可能回显输入的子进程错误写入日志。私人构建必须在私人仓库执行，显式指定私人输入和输出；公开工作流不得读取私人数据。
 - 保持现有 Raw 路径。每次规则变更提交 YAML 和全部目标产物，执行 `bun run typecheck`、`bun test`、`bun run rules:validate`、`bun run rules:build`、`bun run rules:check`。完整测试必须提供官方编译器，不能跳过 SRS 测试后声称全量通过；原有 Loon 插件测试必须保留。
 - CI 在 PR、main 推送和手动触发时校验产物；Actions 固定 Commit SHA，编译器下载固定 SHA256，依赖使用 lockfile，Token 最小只读权限。禁止 PR 自动写入主分支、上传私人 Artifacts 或增加无必要的定时构建。

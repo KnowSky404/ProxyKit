@@ -52,13 +52,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          archive="$RUNNER_TEMP/sing-box-1.10.7-linux-amd64.tar.gz"
+          archive="$RUNNER_TEMP/sing-box-1.14.4-linux-amd64.tar.gz"
           curl --fail --silent --show-error --location --retry 3 \
-            https://github.com/SagerNet/sing-box/releases/download/v1.10.7/sing-box-1.10.7-linux-amd64.tar.gz \
+            https://github.com/SagerNet/sing-box/releases/download/v1.14.4/sing-box-1.14.4-linux-amd64.tar.gz \
             --output "$archive"
-          echo "1951a0785c8b4e1e21e0640227a49528ca772aec3d680061652e3d6b687e00fe  $archive" | sha256sum --check --status
+          echo "699a1b510aa4396b2176d32d1181920399ebf1e267835da6f3b598d0f7c24968  $archive" | sha256sum --check --status
           tar -xzf "$archive" -C "$RUNNER_TEMP"
-          echo "$RUNNER_TEMP/sing-box-1.10.7-linux-amd64" >> "$GITHUB_PATH"
+          echo "$RUNNER_TEMP/sing-box-1.14.4-linux-amd64" >> "$GITHUB_PATH"
       - name: Generate inside private checkout
         shell: bash
         run: |

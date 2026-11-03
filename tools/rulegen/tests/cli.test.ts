@@ -104,7 +104,8 @@ describe("rulegen standalone CLI", () => {
     expect(readdirSync(outside)).toEqual([]);
   });
   test("missing and incompatible compilers fail before writing any artifacts", () => {
-    for (const path of [join(directory, "missing"), fakeCompiler("printf 'sing-box version 1.9.0\\n'")]) {
+    for (const version of [undefined, "1.9.0", "1.10.7"]) {
+      const path = version ? fakeCompiler(`printf 'sing-box version ${version}\\n'`) : join(directory, "missing");
       const result = run("build", "--input", input, "--output", output, "--sing-box", path);
       expect(result.exitCode).toBe(1);
       expect(existsSync(output)).toBe(false);
@@ -114,11 +115,14 @@ describe("rulegen standalone CLI", () => {
   test("known compiler errors provide fixed safe reasons without repeating source or paths", () => {
     const cases = [
       ["unknown rule-set version: 255", "unsupported source rule-set version"],
+      ["unexpected end of JSON input", "incomplete source JSON"],
+      ["unexpected end of JSON input: row 1, column 22", "incomplete source JSON"],
+      ["unexpected end of JSON input: private-example.invalid", "unclassified compiler error"],
       ['ipcidr: parse [0]: netip.ParsePrefix("private-example.invalid"): no prefix', "invalid IP CIDR matcher"],
       ["open /private-example.invalid/rules.json: permission denied", "compiler filesystem permission denied"],
     ];
     for (const [message, reason] of cases) {
-      const path = fakeCompiler(`if [ "$1" = version ]; then printf 'sing-box version 1.10.7\\n'; exit 0; fi\nprintf '%s\\n' 'FATAL[0000] ${message}' >&2\nexit 1`);
+      const path = fakeCompiler(`if [ "$1" = version ]; then printf 'sing-box version 1.14.4\\n'; exit 0; fi\nprintf '%s\\n' 'FATAL[0000] ${message}' >&2\nexit 1`);
       const result = run("build", "--input", input, "--output", output, "--sing-box", path);
       expect(result.exitCode).toBe(1);
       expect(text(result)).toContain(reason);
@@ -127,7 +131,7 @@ describe("rulegen standalone CLI", () => {
     }
   });
   test("compiler failures explain the operation without exposing child output", () => {
-    const path = fakeCompiler("if [ \"$1\" = version ]; then printf 'sing-box version 1.10.7\\n'; exit 0; fi\nprintf 'private-example.invalid: unknown rule-set version: 255' >&2\nexit 9");
+    const path = fakeCompiler("if [ \"$1\" = version ]; then printf 'sing-box version 1.14.4\\n'; exit 0; fi\nprintf 'private-example.invalid: unknown rule-set version: 255' >&2\nexit 9");
     const result = run("build", "--input", input, "--output", output, "--sing-box", path);
     expect(result.exitCode).toBe(1);
     expect(text(result)).toContain("compilation failed (exit 9)");
