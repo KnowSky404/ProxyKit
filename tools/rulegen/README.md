@@ -33,6 +33,7 @@ bun tools/rulegen/src/cli.ts check
 | `build` | 验证后构建全部规则，默认三端输出 |
 | `validate` | 验证规则和目标兼容性，不写文件 |
 | `check` | 重新生成并比较已有产物，漂移返回非零 |
+| `verify` | 复用 check，独立解析产物并报告规则数量与脱敏质量诊断，不写文件 |
 | `--input DIR` | 输入 YAML 目录，默认 `shared/rules/` |
 | `--output ROOT` | 输出根目录，默认工具仓库根目录 |
 | `--target loon,quantumultx,sing-box` | 逗号分隔目标子集；默认 `all` |
@@ -73,3 +74,9 @@ bun run rules:check
 测试覆盖 Schema、两类域名与 CIDR、顺序、重复检测、禁用和注释、目标格式、历史列表快照、跨客户端匹配集合、确定性、仓库外调用、漂移及真实官方 SRS 编译和解析。既有 `tests/loon/` 继续执行。迁移快照仅作为回归证据，不能作为第二份维护源；修改规则时应明确说明与历史快照的预期差异。
 
 [架构说明](../../docs/architecture.md) 记录模块职责与产物策略；[Private 集成](../../docs/private-integration.md) 提供固定 Commit 引用方式。
+
+## 规则质量与实际验证
+
+`bun run rules:verify` 依次执行类型检查、全部 Bun 测试及 `cli.ts verify`；需将官方编译器放入 PATH，并用 `SING_BOX_BIN` 指定同一工具供测试使用。CLI `verify` 支持上表中的显式输入/输出与目标子集，适合在私人仓库复用；只运行 CLI 时不会执行公开回归或本地流量测试。Warning/Info 不阻断正常覆盖，Error/漂移/编译失败返回非零。
+
+[覆盖矩阵与诊断说明](../../docs/rule-verification.md) 区分原有能力、新增静态匹配与官方 loopback 路由证据；[客户端清单](../../docs/client-verification.md) 提供 Apple 客户端及 sing-box 真机导入、更新、策略和 DNS 验证流程。静态检查不等于 Loon/QX 实际加载，loopback 不等于业务可达性。

@@ -7,6 +7,7 @@
     "rules:build": "bun tools/rulegen/src/cli.ts build",
     "rules:validate": "bun tools/rulegen/src/cli.ts validate",
     "rules:check": "bun tools/rulegen/src/cli.ts check",
+    "rules:verify": "bun run typecheck && bun test && bun tools/rulegen/src/cli.ts verify",
     "typecheck": "tsc --noEmit",
     "test": "bun test"
   },

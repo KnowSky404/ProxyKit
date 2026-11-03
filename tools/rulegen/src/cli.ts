@@ -6,21 +6,24 @@ import { randomUUID } from "node:crypto";
 import { loadRules, RuleValidationError } from "./model";
 import { renderList, renderSingBox, validateTarget } from "./generate";
 import { checkCompiler, compileSrs, CompilerError, SING_BOX_VERSION } from "./srs";
+import { verifyArtifact } from "./verify";
+import { analyzeQuality } from "./quality";
 
 type Target = "loon" | "quantumultx" | "sing-box";
-type Command = "build" | "validate" | "check";
+type Command = "build" | "validate" | "check" | "verify";
 const targets: Target[] = ["loon", "quantumultx", "sing-box"];
 const repository = fileURLToPath(new URL("../../../", import.meta.url));
 const directories: Record<Target, string> = { loon: "loon/rules", quantumultx: "quantumultx/filters", "sing-box": "sing-box/rules" };
 
 const help = `ProxyKit rulegen — build deterministic client rules from local YAML
 
-Usage: bun /path/to/tools/rulegen/src/cli.ts [build|validate|check] [options]
+Usage: bun /path/to/tools/rulegen/src/cli.ts [build|validate|check|verify] [options]
 
 Commands:
   build       Validate and generate all selected client artifacts (default).
   validate    Validate YAML and selected target semantics; write no files.
   check       Rebuild in memory and fail on missing, stale or changed artifacts.
+  verify      Also parse existing artifacts independently and report rule quality.
 
 Options:
   --input DIR       YAML source directory (default: generator repo/shared/rules).
@@ -50,7 +53,7 @@ function parse(args: string[]): Options {
   const options: Options = { command: "build", input: join(repository, "shared/rules"), output: repository, targets: [...targets], compiler: "sing-box" };
   const first = args[0];
   if (first && !first.startsWith("-")) {
-    if (!["build", "validate", "check"].includes(first)) throw new CliError("Unknown command; use --help.");
+    if (!["build", "validate", "check", "verify"].includes(first)) throw new CliError("Unknown command; use --help.");
     options.command = args.shift() as Command;
   }
   const seen = new Set<string>();
@@ -144,7 +147,24 @@ export async function runCli(args: string[]): Promise<void> {
   }
   const existing = await existingArtifacts(options);
   const stale = existing.filter((path) => !artifacts.has(path));
-  if (options.command === "check") {
+  if (options.command === "check" || options.command === "verify") {
+    if (options.command === "verify") {
+      for (const [s, { name, data }] of sets.entries()) {
+        for (const target of options.targets) {
+          const extension = target === "sing-box" ? "json" : "list";
+          const path = join(options.output, directories[target], `${name}.${extension}`);
+          const info = await statIfExists(path);
+          if (!info) throw new CliError(`source[${s}] ${target}: generated artifact is missing.`);
+          if (!info.isFile() || info.isSymbolicLink()) throw new CliError(`source[${s}] ${target}: expected a regular artifact file.`);
+          const content = await readFile(path, "utf8");
+          try { verifyArtifact(content, target, data); }
+          catch (error) {
+            if (error instanceof RuleValidationError) throw new CliError(`source[${s}] ${error.message}`);
+            throw error;
+          }
+        }
+      }
+    }
     let different = stale.length;
     for (const [path, expected] of artifacts) {
       const info = await statIfExists(path);
@@ -153,6 +173,25 @@ export async function runCli(args: string[]): Promise<void> {
       if (!Buffer.from(expected).equals(await readFile(path))) different++;
     }
     if (different) throw new CliError(`Generated artifacts differ (${different} files); run rulegen build and commit the updated artifacts.`);
+    if (options.command === "verify") {
+      const diagnostics = analyzeQuality(sets.map(({ data }) => data));
+      const counts = { error: 0, warning: 0, info: 0 };
+      for (const diagnostic of diagnostics) {
+        counts[diagnostic.severity]++;
+        console.log(JSON.stringify(diagnostic));
+      }
+      const types = { domain: 0, "domain-suffix": 0, "ipv4-cidr": 0, "ipv6-cidr": 0 };
+      let enabled = 0;
+      let disabled = 0;
+      for (const { data } of sets) for (const group of data.groups) for (const rule of group.rules) {
+        types[rule.type]++;
+        if (rule.enabled === false) disabled++; else enabled++;
+      }
+      console.log(JSON.stringify({ ruleSets: sets.length, rules: types, enabled, disabled, artifacts: artifacts.size, ...counts }));
+      console.log("Static matcher subset verified; selected SRS rebuilt and officially decoded. Run bun test for positive/negative cases and loopback runtime routing. Loon/QX device loading and remote updates require manual verification (docs/client-verification.md).");
+      if (counts.error) throw new CliError("Rule quality errors require correction.");
+      return;
+    }
     console.log(`Checked ${artifacts.size} artifacts; all match source data.`);
     return;
   }

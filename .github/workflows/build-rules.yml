@@ -42,19 +42,13 @@ jobs:
           tar -xzf "$archive" -C "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/sing-box-1.14.4-linux-amd64" >> "$GITHUB_PATH"
           echo "SING_BOX_BIN=$RUNNER_TEMP/sing-box-1.14.4-linux-amd64/sing-box" >> "$GITHUB_ENV"
-      - name: Type check
-        run: bun run typecheck
-      - name: Run generator, SRS integration and existing plugin tests
-        run: bun test
-      - name: Validate all YAML and target semantics
-        run: bun run rules:validate
+      - name: Verify types, matching, runtime routing, quality and committed artifacts
+        run: bun run rules:verify
       - name: Build all clients in staging
         shell: bash
         run: |
           set -euo pipefail
           bun tools/rulegen/src/cli.ts build --output "$RUNNER_TEMP/proxykit-rules"
           bun tools/rulegen/src/cli.ts check --output "$RUNNER_TEMP/proxykit-rules"
-      - name: Check committed generated artifacts
-        run: bun run rules:check
       - name: Confirm checks left the worktree unchanged
         run: git diff --exit-code
