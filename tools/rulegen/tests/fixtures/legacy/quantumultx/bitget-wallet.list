@@ -1,0 +1,76 @@
+# NAME: Bitget Wallet
+# AUTHOR: ProxyKit
+# UPDATED: 2026-06-14
+# SOURCE: iOS Bitget Wallet Loon capture (198_1781417415757.zip)
+# NOTE: Domains observed from DoH queries in the capture. Shared telemetry and Apple system services are kept commented to avoid matching them globally.
+
+# Bitget Wallet / BitKeep core domains
+HOST-SUFFIX,bitkeep.com
+HOST-SUFFIX,bitkeep.app
+HOST-SUFFIX,bitkeep.asia
+HOST-SUFFIX,bitkeep.biz
+HOST-SUFFIX,bitkeep.fun
+HOST-SUFFIX,bitkeep.life
+HOST-SUFFIX,bitkeep.top
+HOST-SUFFIX,bitkeep.vip
+HOST-SUFFIX,bitapi.vip
+
+# Observed Bitget Wallet app fallback / API / static domains
+HOST-SUFFIX,wwmxd.fun
+HOST-SUFFIX,wwmxd.org
+HOST-SUFFIX,wwmxd.shop
+HOST-SUFFIX,chainnear.com
+HOST-SUFFIX,ljhsnzpc.com
+HOST-SUFFIX,lymryy.com
+HOST-SUFFIX,jjdsn.vip
+HOST-SUFFIX,bgw.live
+HOST-SUFFIX,bgw.world
+HOST-SUFFIX,bwb.global
+HOST-SUFFIX,bwb.online
+
+# Observed Bitget Wallet endpoints covered by suffix rules above
+# HOST,api-data.bitkeep.com
+# HOST,api-app-fast.bitkeep.app
+# HOST,api-app-slow.bitkeep.app
+# HOST,api-app-slow.bitkeep.asia
+# HOST,api-app-slow.bitkeep.biz
+# HOST,api-app-slow.bitkeep.fun
+# HOST,api-app-slow.bitkeep.life
+# HOST,api-app-slow.bitkeep.top
+# HOST,cdn.bitkeep.vip
+# HOST,api-app-slow.bitapi.vip
+# HOST,api-app-grpc.wwmxd.fun
+# HOST,api-app-grpc.wwmxd.org
+# HOST,api-app-grpc.wwmxd.shop
+# HOST,api-app-slow.chainnear.com
+# HOST,conf.chainnear.com
+# HOST,api-app-slow.ljhsnzpc.com
+# HOST,api-app-slow.lymryy.com
+# HOST,static-web.jjdsn.vip
+# HOST,newshare.bgw.live
+# HOST,newshare.bgw.world
+# HOST,newshare.bwb.global
+# HOST,newshare.bwb.online
+
+# Observed third-party wallet / chain / partner endpoints
+HOST-SUFFIX,walletconnect.org
+HOST-SUFFIX,web3modal.org
+HOST,arb-mainnet.g.alchemy.com
+HOST,arb1.arbitrum.io
+HOST,cca-lite.coinbase.com
+HOST,app.fiat24.com
+HOST,polymarket-upload.s3.us-east-2.amazonaws.com
+
+# Observed third-party telemetry / push endpoints
+# Enable only if push or telemetry traffic also needs the same policy.
+# HOST,log.noxiaohao.com
+# HOST,notifier-configs.airbrake.io
+# HOST,pushstat-hk.engagelab.com
+# HOST,sis-hk.push.engage7.com
+# HOST,sis-hk.push.engageforce.net
+# HOST,sis-hk.push.theengagelab.com
+
+# Observed Apple system domains in the same capture, intentionally not matched.
+# HOST,gateway.icloud.com.cn
+# HOST,ocsp2.g.aaplimg.com
+# HOST,wps.v.aaplimg.com

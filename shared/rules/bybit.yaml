@@ -1,0 +1,106 @@
+# Canonical source; regenerate client files with bun run rules:build.
+version: 1
+metadata:
+  name: "Bybit"
+  author: "ProxyKit"
+  updated: "2026-06-11"
+  source: "iOS Bybit App Loon capture (193_1781131028090.zip)"
+  note: "Domains observed from DoH queries in the capture. Third-party fraud/risk endpoints are kept commented to avoid matching shared services globally."
+groups:
+  - name: "Bybit core domains"
+    rules:
+      - type: domain-suffix
+        value: "bybit.com"
+      - type: domain-suffix
+        value: "bybit.biz"
+      - type: domain-suffix
+        value: "jbybit.com"
+  - name: "Bybit app API, websocket, static, and fallback domains observed in capture"
+    rules:
+      - type: domain-suffix
+        value: "byapps.net"
+      - type: domain-suffix
+        value: "bycsi.com"
+      - type: domain-suffix
+        value: "byabcde.com"
+      - type: domain-suffix
+        value: "byabcd.com"
+      - type: domain-suffix
+        value: "bybdc6.com"
+      - type: domain-suffix
+        value: "byd3c3.com"
+      - type: domain-suffix
+        value: "bynbc.com"
+      - type: domain-suffix
+        value: "ng-dex.com"
+      - type: domain-suffix
+        value: "wsot2022.com"
+  - name: "Observed Bybit telemetry / data collection domains"
+    rules:
+      - type: domain-suffix
+        value: "ffbbbdc6d3c353211fe2ba39c9f744cd.com"
+      - type: domain
+        value: "sc-abtest.ffe390afd658c19dcbf707e0597b846d.de"
+  - name: "Observed dedicated CDN hosts queried directly by the app"
+    rules:
+      - type: domain
+        value: "d1znqpii6yeci9.cloudfront.net"
+      - type: domain
+        value: "d2twlc9j3xrrm5.cloudfront.net"
+  - name: "Observed Bybit endpoints covered by suffix rules above"
+    rules:
+      - type: domain
+        value: "api3.bybit.biz"
+        enabled: false
+      - type: domain
+        value: "static.bybit.biz"
+        enabled: false
+      - type: domain
+        value: "ws2.bybit.biz"
+        enabled: false
+      - type: domain
+        value: "www.bybit.com"
+        enabled: false
+      - type: domain
+        value: "www.jbybit.com"
+        enabled: false
+      - type: domain
+        value: "api3.byapps.net"
+        enabled: false
+      - type: domain
+        value: "ws2.byapps.net"
+        enabled: false
+      - type: domain
+        value: "t1.bycsi.com"
+        enabled: false
+      - type: domain
+        value: "s1.bycsi.com"
+        enabled: false
+      - type: domain
+        value: "fh-static.bycsi.com"
+        enabled: false
+      - type: domain
+        value: "asset-file-core-auth-prod.bycsi.com"
+        enabled: false
+      - type: domain
+        value: "api3.ng-dex.com"
+        enabled: false
+      - type: domain
+        value: "ws2.ng-dex.com"
+        enabled: false
+      - type: domain
+        value: "spdtest-cft.ng-dex.com"
+        enabled: false
+      - type: domain
+        value: "spdtest-ws.ng-dex.com"
+        enabled: false
+  - name: "Observed third-party fraud/risk endpoints used by the Bybit app"
+    comments:
+      - "Enable only if these services also need to follow the Bybit policy."
+    rules:
+      - type: domain
+        value: "h64.online-metrix.net"
+        enabled: false
+      - type: domain
+        value: "www.turingfraud.net"
+        enabled: false
