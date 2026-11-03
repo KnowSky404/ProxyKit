@@ -57,3 +57,5 @@ bun test
 `no-resolve` 不是跨客户端通用标志：Loon 正式支持，Quantumult X 现有第三字段只按历史兼容文本保留，不能视为 DNS 开关；sing-box 依赖调用方不预解析的路由配置。相关源文件必须显式声明兼容策略，详见 [语义差异](docs/rule-format.md)。因此不宣称任意主配置下的 DNS 行为完全等价。
 
 Loon 插件的实际支持范围、最低版本和真机验证限制见 [Loon 文档](loon/README.md)。公共与私人规则隔离设计见 [架构](docs/architecture.md) 和 [Private 集成指南](docs/private-integration.md)。本次不实现 Workers、R2、私人仓库创建、Web 编辑器或节点管理。
+
+规则质量验证统一入口为 `bun run rules:verify`（固定官方编译器需在 PATH，测试可用 `SING_BOX_BIN` 指定）。它复用类型检查、完整 Bun 测试、产物检查与独立解析，报告脱敏覆盖诊断。详细[覆盖矩阵与隐私复用](docs/rule-verification.md)、[客户端导入和真机验证清单](docs/client-verification.md)说明自动化证据与尚未执行的真机行为。

@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkCompiler, compileSrs } from "../src/srs";
+import type { RuleSet } from "../src/model";
 
 const cli = fileURLToPath(new URL("../src/cli.ts", import.meta.url));
 const compiler = process.env.SING_BOX_BIN ?? "sing-box";
@@ -167,5 +168,53 @@ describe("official sing-box compiler integration", () => {
     expect(() => compileSrs('{"version":999,"rules":[]}', compiler)).toThrow("invalid source version field");
     expect(() => compileSrs('{"version":2,"rules":[{"ip_cidr":["private-example.invalid"]}]}', compiler)).toThrow("invalid IP CIDR matcher");
     expect(() => compileSrs('{"version":2,"rules":[', compiler)).toThrow("incomplete source JSON");
+  });
+});
+
+describe("verification entrypoint", () => {
+  test("verifies external private artifacts read-only and reports only counts and ordinals", () => {
+    const privateSource = structuredClone(source) as RuleSet;
+    privateSource.groups[0].rules = [
+      { type: "domain-suffix", value: "private-example.invalid" },
+      { type: "domain", value: "api.private-example.invalid", enabled: false },
+    ];
+    writeFileSync(join(input, "private-name.yaml"), JSON.stringify(privateSource));
+    writeFileSync(join(input, "other-private-name.yaml"), JSON.stringify(source));
+    const args = ["--input", input, "--output", output, "--target", "loon,quantumultx"];
+    expect(run("build", ...args).exitCode).toBe(0);
+    const file = join(output, "loon/rules/private-name.list");
+    const before = readFileSync(file);
+    const result = run("verify", ...args);
+    expect(text(result)).toBe("");
+    expect(result.exitCode).toBe(0);
+    const log = new TextDecoder().decode(result.stdout);
+    expect(log).toContain('"ruleSets":2');
+    expect(log).toContain('"artifacts":4');
+    expect(log).toContain('"error":0');
+    expect(log).toContain('"severity":"warning"');
+    expect(log).toContain('"severity":"info"');
+    for (const secret of ["private-example", "private-name", input, output]) expect(log).not.toContain(secret);
+    expect(readFileSync(file)).toEqual(before);
+  });
+  test("verification refuses malformed sources or drift without changing output", () => {
+    const args = ["--input", input, "--output", output, "--target", "loon"];
+    expect(run("build", ...args).exitCode).toBe(0);
+    const file = join(output, "loon/rules/private-name.list");
+    writeFileSync(file, "DOMAIN-SUFFIX,private-example.invalid\n");
+    const result = run("verify", ...args);
+    expect(result.exitCode).toBe(1);
+    expect(text(result)).not.toContain("private");
+    expect(text(result)).toContain("source[0] loon.rules[0]");
+    expect(readFileSync(file, "utf8")).toBe("DOMAIN-SUFFIX,private-example.invalid\n");
+    writeFileSync(join(input, "private-name.yaml"), JSON.stringify({ ...source, version: 99 }));
+    expect(run("verify", ...args).exitCode).toBe(1);
+  });
+  test("all-target verification requires the real compiler and verifies four artifacts per set", () => {
+    const args = ["--input", input, "--output", output, "--sing-box", compiler];
+    expect(run("build", ...args).exitCode).toBe(0);
+    const result = run("verify", ...args);
+    expect(result.exitCode).toBe(0);
+    expect(new TextDecoder().decode(result.stdout)).toContain('"artifacts":4');
+    expect(run("verify", "--input", input, "--output", output, "--sing-box", join(directory, "missing")).exitCode).toBe(1);
   });
 });
