@@ -166,7 +166,7 @@ describe("independent static generated-subset verification", () => {
   });
 });
 
-describe("five-set hand-authored regression corpus", () => {
+describe("hand-authored regression corpus for every current rule set", () => {
   test("corpus covers every set with both positive and negative expectations", () => {
     expect([...new Set(cases.map(item => item.set))].sort()).toEqual(sets.map(item => item.name));
     for (const { name } of sets) {

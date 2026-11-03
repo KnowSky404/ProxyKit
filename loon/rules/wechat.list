@@ -1,0 +1,46 @@
+# NAME: WeChat
+# AUTHOR: KnowSky404
+# UPDATED: 2026-11-03
+# SOURCE: Manually maintained sing-box route rule: https://microbin.knowsky.uk/raw/bqWQ3e
+# NOTE: Preserves all 31 supplied domain/IP predicates, including shared Tencent endpoints and the full IP range. Private-IP routing and the Direct outbound remain in consumer configuration.
+
+# Original IP range
+# The full supplied range is retained; it is not exclusive to WeChat.
+# Migration uses the repository's no-pre-resolution contract; the original route rule did not encode no-resolve.
+# QX's third-field no-resolve is a compatibility policy token, not a DNS switch; set filter_remote force-policy.
+IP-CIDR,43.160.0.0/12,no-resolve
+
+# Original exact domains
+# Shared service endpoints are retained exactly as supplied, without expanding them to suffixes.
+DOMAIN,apd-pcdnwxlogin.teg.tencent-cloud.net
+DOMAIN,btrace.qq.com
+DOMAIN,dldir1.qq.com
+DOMAIN,slife.xy-asia.com
+DOMAIN,soup.v.qq.com
+DOMAIN,vweixinf.tc.qq.com
+DOMAIN,weixin110.qq.com
+DOMAIN,wup.imtt.qq.com
+
+# Original domain suffixes
+DOMAIN-SUFFIX,iot-tencent.com
+DOMAIN-SUFFIX,lbs.gtimg.com
+DOMAIN-SUFFIX,map.qq.com
+DOMAIN-SUFFIX,qlogo.cn
+DOMAIN-SUFFIX,qpic.cn
+DOMAIN-SUFFIX,servicewechat.com
+DOMAIN-SUFFIX,tenpay.com
+DOMAIN-SUFFIX,up-hl.3g.qq.com
+DOMAIN-SUFFIX,vweixinthumb.tc.qq.com
+DOMAIN-SUFFIX,wechat.com
+DOMAIN-SUFFIX,wechatlegal.net
+DOMAIN-SUFFIX,wechatos.net
+DOMAIN-SUFFIX,wechatpay.com
+DOMAIN-SUFFIX,weixin.com
+DOMAIN-SUFFIX,weixin.qq.com
+DOMAIN-SUFFIX,weixinbridge.com
+DOMAIN-SUFFIX,weixinsxy.com
+DOMAIN-SUFFIX,wx.gtimg.com
+DOMAIN-SUFFIX,wx.qq.com
+DOMAIN-SUFFIX,wxapp.tc.qq.com
+DOMAIN-SUFFIX,wxs.qq.com
+DOMAIN-SUFFIX,yun-hl.3g.qq.com

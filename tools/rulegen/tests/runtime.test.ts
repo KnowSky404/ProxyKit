@@ -180,7 +180,7 @@ describe("official sing-box runtime with isolated loopback traffic", () => {
   }
 
   for (const format of ["source", "binary"] as const) {
-    for (const name of ["binance", "bitget-wallet", "bybit", "ur", "wise"]) {
+    for (const name of [...new Set(regressionCases.map(entry => entry.set))].sort()) {
       test(`${format}: committed ${name} routes independent regression probes to the expected outbound`, async () => environment(async (directory, [matched, priority, fallback]) => {
         const config = fixture(directory, format, matched, priority, fallback);
         const extension = format === "source" ? "json" : "srs";

@@ -1,0 +1,88 @@
+# Canonical source; regenerate client files with bun run rules:build.
+version: 1
+metadata:
+  name: "WeChat"
+  author: "KnowSky404"
+  updated: "2026-11-03"
+  source: "Manually maintained sing-box route rule: https://microbin.knowsky.uk/raw/bqWQ3e"
+  note: "Preserves all 31 supplied domain/IP predicates, including shared Tencent endpoints and the full IP range. Private-IP routing and the Direct outbound remain in consumer configuration."
+compatibility:
+  quantumultx_no_resolve: legacy-policy-token
+  sing_box_no_resolve: require-no-pre-resolution
+groups:
+  - name: "Original IP range"
+    comments:
+      - "The full supplied range is retained; it is not exclusive to WeChat."
+      - "Migration uses the repository's no-pre-resolution contract; the original route rule did not encode no-resolve."
+      - "QX's third-field no-resolve is a compatibility policy token, not a DNS switch; set filter_remote force-policy."
+    rules:
+      - type: ipv4-cidr
+        value: "43.160.0.0/12"
+        options:
+          no_resolve: true
+  - name: "Original exact domains"
+    comments:
+      - "Shared service endpoints are retained exactly as supplied, without expanding them to suffixes."
+    rules:
+      - type: domain
+        value: "apd-pcdnwxlogin.teg.tencent-cloud.net"
+      - type: domain
+        value: "btrace.qq.com"
+      - type: domain
+        value: "dldir1.qq.com"
+      - type: domain
+        value: "slife.xy-asia.com"
+      - type: domain
+        value: "soup.v.qq.com"
+      - type: domain
+        value: "vweixinf.tc.qq.com"
+      - type: domain
+        value: "weixin110.qq.com"
+      - type: domain
+        value: "wup.imtt.qq.com"
+  - name: "Original domain suffixes"
+    rules:
+      - type: domain-suffix
+        value: "iot-tencent.com"
+      - type: domain-suffix
+        value: "lbs.gtimg.com"
+      - type: domain-suffix
+        value: "map.qq.com"
+      - type: domain-suffix
+        value: "qlogo.cn"
+      - type: domain-suffix
+        value: "qpic.cn"
+      - type: domain-suffix
+        value: "servicewechat.com"
+      - type: domain-suffix
+        value: "tenpay.com"
+      - type: domain-suffix
+        value: "up-hl.3g.qq.com"
+      - type: domain-suffix
+        value: "vweixinthumb.tc.qq.com"
+      - type: domain-suffix
+        value: "wechat.com"
+      - type: domain-suffix
+        value: "wechatlegal.net"
+      - type: domain-suffix
+        value: "wechatos.net"
+      - type: domain-suffix
+        value: "wechatpay.com"
+      - type: domain-suffix
+        value: "weixin.com"
+      - type: domain-suffix
+        value: "weixin.qq.com"
+      - type: domain-suffix
+        value: "weixinbridge.com"
+      - type: domain-suffix
+        value: "weixinsxy.com"
+      - type: domain-suffix
+        value: "wx.gtimg.com"
+      - type: domain-suffix
+        value: "wx.qq.com"
+      - type: domain-suffix
+        value: "wxapp.tc.qq.com"
+      - type: domain-suffix
+        value: "wxs.qq.com"
+      - type: domain-suffix
+        value: "yun-hl.3g.qq.com"

@@ -1,0 +1,160 @@
+{
+  "version": 2,
+  "rules": [
+    {
+      "ip_cidr": [
+        "43.160.0.0/12"
+      ]
+    },
+    {
+      "domain": [
+        "apd-pcdnwxlogin.teg.tencent-cloud.net"
+      ]
+    },
+    {
+      "domain": [
+        "btrace.qq.com"
+      ]
+    },
+    {
+      "domain": [
+        "dldir1.qq.com"
+      ]
+    },
+    {
+      "domain": [
+        "slife.xy-asia.com"
+      ]
+    },
+    {
+      "domain": [
+        "soup.v.qq.com"
+      ]
+    },
+    {
+      "domain": [
+        "vweixinf.tc.qq.com"
+      ]
+    },
+    {
+      "domain": [
+        "weixin110.qq.com"
+      ]
+    },
+    {
+      "domain": [
+        "wup.imtt.qq.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "iot-tencent.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "lbs.gtimg.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "map.qq.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "qlogo.cn"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "qpic.cn"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "servicewechat.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "tenpay.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "up-hl.3g.qq.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "vweixinthumb.tc.qq.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "wechat.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "wechatlegal.net"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "wechatos.net"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "wechatpay.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "weixin.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "weixin.qq.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "weixinbridge.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "weixinsxy.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "wx.gtimg.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "wx.qq.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "wxapp.tc.qq.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "wxs.qq.com"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "yun-hl.3g.qq.com"
+      ]
+    }
+  ]
+}

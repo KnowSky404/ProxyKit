@@ -9,7 +9,7 @@ import { checkCompiler, compileSrs } from "../src/srs.ts";
 
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const fixtures = new URL("./fixtures/legacy/", import.meta.url);
-const names = ["binance", "bitget-wallet", "bybit", "ur", "wise"];
+const legacyNames = ["binance", "bitget-wallet", "bybit", "ur", "wise"];
 const sets = await loadRules(join(root, "shared/rules"));
 const compiler = process.env.SING_BOX_BIN ?? "sing-box";
 function match(path: string, value: string): boolean {
@@ -20,20 +20,36 @@ function match(path: string, value: string): boolean {
 }
 
 describe("migration from main at 179fb7c", () => {
-  test("all five sources and every client artifact retain the same names", () => {
-    expect(sets.map(set => set.name)).toEqual(names);
+  test("all five original sources remain present", () => {
+    expect(sets.map(set => set.name).filter(name => legacyNames.includes(name))).toEqual(legacyNames);
+  });
+  for (const { name, data } of sets.filter(set => legacyNames.includes(set.name))) {
+    test(`${name}: metadata, order, comments, disabled candidates and options survive byte-for-byte`, () => {
+      for (const target of ["loon", "quantumultx"] as const) {
+        const legacy = readFileSync(new URL(`${target}/${name}.list`, fixtures), "utf8");
+        expect(renderList(data, target)).toBe(legacy);
+      }
+    });
+  }
+  test("Binance explicitly retains the legacy QX policy token and sing-box resolution contract", () => {
+    const data = sets.find(set => set.name === "binance")!.data;
+    expect(data.compatibility).toEqual({ quantumultx_no_resolve: "legacy-policy-token", sing_box_no_resolve: "require-no-pre-resolution" });
+    expect(data.groups.flatMap(group => group.rules).filter(rule => rule.type === "ipv4-cidr").every(rule => rule.options?.no_resolve === true)).toBe(true);
+  });
+});
+
+describe("all current sources and generated client artifacts", () => {
+  test("every client artifact has exactly the current source basenames", () => {
+    const names = sets.map(set => set.name);
     for (const [dir, ext] of [["loon/rules", ".list"], ["quantumultx/filters", ".list"], ["sing-box/rules", ".json"], ["sing-box/rules", ".srs"]]) {
       expect(readdirSync(join(root, dir)).filter(file => file.endsWith(ext)).map(file => file.slice(0, -ext.length)).sort()).toEqual(names);
     }
   });
   for (const { name, data } of sets) {
-    test(`${name}: metadata, order, comments, disabled candidates and options survive byte-for-byte`, () => {
+    test(`${name}: committed text lists preserve the source and equivalent client syntax`, () => {
       for (const target of ["loon", "quantumultx"] as const) {
-        const legacy = readFileSync(new URL(`${target}/${name}.list`, fixtures), "utf8");
-        const output = renderList(data, target);
-        expect(output).toBe(legacy);
         const path = target === "loon" ? "loon/rules" : "quantumultx/filters";
-        expect(readFileSync(join(root, path, `${name}.list`), "utf8")).toBe(output);
+        expect(readFileSync(join(root, path, `${name}.list`), "utf8")).toBe(renderList(data, target));
       }
       expect(renderList(data, "quantumultx").replaceAll("HOST-SUFFIX,", "DOMAIN-SUFFIX,").replaceAll("HOST,", "DOMAIN,")).toBe(renderList(data, "loon"));
     });
@@ -45,11 +61,6 @@ describe("migration from main at 179fb7c", () => {
       expect(readFileSync(join(root, "sing-box/rules", `${name}.json`), "utf8")).toBe(renderSingBox(data));
     });
   }
-  test("Binance explicitly retains the legacy QX policy token and sing-box resolution contract", () => {
-    const data = sets.find(set => set.name === "binance")!.data;
-    expect(data.compatibility).toEqual({ quantumultx_no_resolve: "legacy-policy-token", sing_box_no_resolve: "require-no-pre-resolution" });
-    expect(data.groups.flatMap(group => group.rules).filter(rule => rule.type === "ipv4-cidr").every(rule => rule.options?.no_resolve === true)).toBe(true);
-  });
 });
 
 describe("real official SRS matching and reproducibility", () => {
