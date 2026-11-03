@@ -6,13 +6,13 @@
 
 - `configs/`: Loon 配置片段或完整配置。
 - `plugins/`: `.plugin` 插件文件。
-- `rules/`: 分流规则列表。
+- `rules/`: 由 `shared/rules/*.yaml` 自动生成的分流规则列表。
 - `scripts/`: 插件或重写规则引用的脚本。
 
 ## 文件建议
 
 - 插件使用 `.plugin` 后缀。
-- 规则文件可按实际格式使用 `.list`、`.conf` 或 `.txt`。
+- 当前生成规则固定使用 `.list` 后缀，原公开路径保持不变。
 - 脚本按语言使用 `.js` 等后缀。
 
 ## 已收录插件
@@ -63,6 +63,8 @@ ipv6-vif = off
 - 本地回归验证：在仓库根目录运行 `bun test tests/loon`。测试检查配置约束和模拟脚本行为，不能替代 Loon 真机导入及播放验证。
 
 ## 已收录规则
+
+以下 `.list` 由共享 YAML 生成，禁止直接编辑。新增、修改或删除规则时，同时生成 Loon、Quantumult X 和 sing-box 产物并维护三个 README 索引；命令见 [rulegen](../tools/rulegen/README.md)。Loon 的 `no-resolve` 继续保留，跨客户端差异见 [规则格式](../docs/rule-format.md)。插件与脚本不由规则生成器管理。
 
 - `rules/binance.list`: Binance App 分流规则，基于 iOS App 抓包整理。
 - `rules/bitget-wallet.list`: Bitget Wallet App 分流规则，基于 iOS App Loon 抓包整理。

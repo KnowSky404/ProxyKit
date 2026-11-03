@@ -1,0 +1,93 @@
+# Canonical source; regenerate client files with bun run rules:build.
+version: 1
+metadata:
+  name: "UR"
+  author: "ProxyKit"
+  updated: "2026-07-06"
+  source: "iOS UR App Loon capture (UR.zip)"
+  note: "Domains observed from DoH queries in the capture. Apple system domains are intentionally excluded."
+groups:
+  - name: "UR core domains"
+    rules:
+      - type: domain-suffix
+        value: "ur.app"
+  - name: "Observed UR endpoints covered by ur.app"
+    rules:
+      - type: domain
+        value: "api.ur.app"
+        enabled: false
+      - type: domain
+        value: "get.ur.app"
+        enabled: false
+      - type: domain
+        value: "nft.ur.app"
+        enabled: false
+      - type: domain
+        value: "static.ur.app"
+        enabled: false
+  - name: "Observed UR business dependencies"
+    rules:
+      - type: domain-suffix
+        value: "markfi.xyz"
+      - type: domain-suffix
+        value: "turnkey.com"
+      - type: domain
+        value: "rpc.mantle.xyz"
+      - type: domain
+        value: "www.turingfraud.net"
+  - name: "Observed endpoints covered by dependency rules above"
+    rules:
+      - type: domain
+        value: "a.markfi.xyz"
+        enabled: false
+      - type: domain
+        value: "cdn.markfi.xyz"
+        enabled: false
+      - type: domain
+        value: "api.turnkey.com"
+        enabled: false
+      - type: domain
+        value: "auth.turnkey.com"
+        enabled: false
+  - name: "Observed shared SDK / support / performance endpoints used by the UR app"
+    comments:
+      - "Enable only if these shared services also need to follow the UR policy."
+    rules:
+      - type: domain
+        value: "api.shorebird.dev"
+        enabled: false
+      - type: domain
+        value: "c.go-mpulse.net"
+        enabled: false
+      - type: domain
+        value: "s.go-mpulse.net"
+        enabled: false
+      - type: domain
+        value: "ekr.zdassets.com"
+        enabled: false
+      - type: domain
+        value: "static.zdassets.com"
+        enabled: false
+  - name: "Observed Apple system domains in the same capture, intentionally not matched."
+    rules:
+      - type: domain
+        value: "init-p01md.apple.com"
+        enabled: false
+      - type: domain
+        value: "itunes.apple.com"
+        enabled: false
+      - type: domain
+        value: "ocsp2.g.aaplimg.com"
+        enabled: false
+      - type: domain
+        value: "setup.icloud.com"
+        enabled: false
+      - type: domain
+        value: "smp-device-content.apple.com"
+        enabled: false
+      - type: domain
+        value: "www.apple.com"
+        enabled: false
+      - type: domain
+        value: "xp.g.aaplimg.com"
+        enabled: false

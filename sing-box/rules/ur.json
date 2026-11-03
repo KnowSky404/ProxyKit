@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "rules": [
+    {
+      "domain_suffix": [
+        "ur.app"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "markfi.xyz"
+      ]
+    },
+    {
+      "domain_suffix": [
+        "turnkey.com"
+      ]
+    },
+    {
+      "domain": [
+        "rpc.mantle.xyz"
+      ]
+    },
+    {
+      "domain": [
+        "www.turingfraud.net"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+# Canonical source; regenerate client files with bun run rules:build.
+version: 1
+metadata:
+  name: "Binance"
+  author: "ProxyKit"
+  updated: "2026-05-31"
+  source: "iOS Binance App mitmproxy capture (binance-flows)"
+  note: "Core Binance API/CDN domains plus observed Binance app HTTPDNS and fallback endpoints."
+# QX retains the historical third-field policy token, not a DNS flag.
+# sing-box consumers must not resolve domain requests before this set.
+compatibility:
+  quantumultx_no_resolve: legacy-policy-token
+  sing_box_no_resolve: require-no-pre-resolution
+groups:
+  - name: "Binance core domains"
+    rules:
+      - type: domain-suffix
+        value: "binance.com"
+      - type: domain-suffix
+        value: "binance.info"
+      - type: domain-suffix
+        value: "binance.click"
+      - type: domain-suffix
+        value: "servicesbinance.com"
+      - type: domain-suffix
+        value: "bsappapi.cc"
+  - name: "Binance static assets and app resources"
+    rules:
+      - type: domain-suffix
+        value: "bnbstatic.com"
+      - type: domain-suffix
+        value: "bscdnweb.com"
+      - type: domain-suffix
+        value: "binance.cloud"
+      - type: domain-suffix
+        value: "binance.gg"
+      - type: domain-suffix
+        value: "binance.im"
+  - name: "Observed Binance app configuration / reporting endpoints"
+    rules:
+      - type: domain
+        value: "api.saasexch.com"
+      - type: domain
+        value: "api.saasexch.co"
+      - type: domain
+        value: "d3sknckuh1o9tg.cloudfront.net"
+      - type: domain
+        value: "fmbxlntehddr.oss-cn-shenzhen.aliyuncs.com"
+      - type: domain
+        value: "upload-bnbstatic-com.s3.ap-northeast-1.amazonaws.com"
+  - name: "Observed Binance app HTTPDNS endpoints"
+    rules:
+      - type: ipv4-cidr
+        value: "106.15.179.166/32"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "116.62.79.64/32"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "120.24.233.110/32"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "47.106.171.207/32"
+        options:
+          no_resolve: true
+  - name: "Observed HTTPDNS resolution targets for www.bsappapi.cc"
+    rules:
+      - type: ipv4-cidr
+        value: "39.108.55.122/32"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "39.108.179.41/32"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "39.108.239.197/32"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "43.145.17.249/32"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "47.106.103.72/32"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "47.106.116.105/32"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "47.106.125.50/32"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "106.53.165.44/32"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "114.132.46.122/32"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "119.23.63.226/32"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "120.77.173.49/32"
+        options:
+          no_resolve: true

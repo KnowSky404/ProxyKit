@@ -1,0 +1,40 @@
+# Canonical source; regenerate client files with bun run rules:build.
+version: 1
+metadata:
+  name: "Wise"
+  author: "ProxyKit"
+  updated: "2026-06-09"
+  source: "iOS Wise App Loon capture (192_1781013634188.zip)"
+  note: "Core Wise domains observed from DoH queries in the capture. Third-party SDK domains are kept commented to avoid matching other apps globally."
+groups:
+  - name: "Wise core domains"
+    rules:
+      - type: domain-suffix
+        value: "wise.com"
+  - name: "Observed Wise app endpoints covered by wise.com"
+    rules:
+      - type: domain
+        value: "api.wise.com"
+        enabled: false
+      - type: domain
+        value: "cards-api.wise.com"
+        enabled: false
+      - type: domain
+        value: "loki-v42zc5nx3sj7swjbm6zacmssmtcs2gck.wise.com"
+        enabled: false
+      - type: domain
+        value: "sst.wise.com"
+        enabled: false
+  - name: "Observed third-party SDK endpoints used by the Wise app"
+    comments:
+      - "Enable only if you want these shared SDK services to follow the Wise policy too."
+    rules:
+      - type: domain
+        value: "api.mixpanel.com"
+        enabled: false
+      - type: domain
+        value: "sdk.fra-01.braze.eu"
+        enabled: false
+      - type: domain
+        value: "skan.singular.net"
+        enabled: false

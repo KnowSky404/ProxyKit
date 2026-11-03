@@ -1,0 +1,170 @@
+# Canonical source; regenerate client files with bun run rules:build.
+version: 1
+metadata:
+  name: "Bitget Wallet"
+  author: "ProxyKit"
+  updated: "2026-06-14"
+  source: "iOS Bitget Wallet Loon capture (198_1781417415757.zip)"
+  note: "Domains observed from DoH queries in the capture. Shared telemetry and Apple system services are kept commented to avoid matching them globally."
+groups:
+  - name: "Bitget Wallet / BitKeep core domains"
+    rules:
+      - type: domain-suffix
+        value: "bitkeep.com"
+      - type: domain-suffix
+        value: "bitkeep.app"
+      - type: domain-suffix
+        value: "bitkeep.asia"
+      - type: domain-suffix
+        value: "bitkeep.biz"
+      - type: domain-suffix
+        value: "bitkeep.fun"
+      - type: domain-suffix
+        value: "bitkeep.life"
+      - type: domain-suffix
+        value: "bitkeep.top"
+      - type: domain-suffix
+        value: "bitkeep.vip"
+      - type: domain-suffix
+        value: "bitapi.vip"
+  - name: "Observed Bitget Wallet app fallback / API / static domains"
+    rules:
+      - type: domain-suffix
+        value: "wwmxd.fun"
+      - type: domain-suffix
+        value: "wwmxd.org"
+      - type: domain-suffix
+        value: "wwmxd.shop"
+      - type: domain-suffix
+        value: "chainnear.com"
+      - type: domain-suffix
+        value: "ljhsnzpc.com"
+      - type: domain-suffix
+        value: "lymryy.com"
+      - type: domain-suffix
+        value: "jjdsn.vip"
+      - type: domain-suffix
+        value: "bgw.live"
+      - type: domain-suffix
+        value: "bgw.world"
+      - type: domain-suffix
+        value: "bwb.global"
+      - type: domain-suffix
+        value: "bwb.online"
+  - name: "Observed Bitget Wallet endpoints covered by suffix rules above"
+    rules:
+      - type: domain
+        value: "api-data.bitkeep.com"
+        enabled: false
+      - type: domain
+        value: "api-app-fast.bitkeep.app"
+        enabled: false
+      - type: domain
+        value: "api-app-slow.bitkeep.app"
+        enabled: false
+      - type: domain
+        value: "api-app-slow.bitkeep.asia"
+        enabled: false
+      - type: domain
+        value: "api-app-slow.bitkeep.biz"
+        enabled: false
+      - type: domain
+        value: "api-app-slow.bitkeep.fun"
+        enabled: false
+      - type: domain
+        value: "api-app-slow.bitkeep.life"
+        enabled: false
+      - type: domain
+        value: "api-app-slow.bitkeep.top"
+        enabled: false
+      - type: domain
+        value: "cdn.bitkeep.vip"
+        enabled: false
+      - type: domain
+        value: "api-app-slow.bitapi.vip"
+        enabled: false
+      - type: domain
+        value: "api-app-grpc.wwmxd.fun"
+        enabled: false
+      - type: domain
+        value: "api-app-grpc.wwmxd.org"
+        enabled: false
+      - type: domain
+        value: "api-app-grpc.wwmxd.shop"
+        enabled: false
+      - type: domain
+        value: "api-app-slow.chainnear.com"
+        enabled: false
+      - type: domain
+        value: "conf.chainnear.com"
+        enabled: false
+      - type: domain
+        value: "api-app-slow.ljhsnzpc.com"
+        enabled: false
+      - type: domain
+        value: "api-app-slow.lymryy.com"
+        enabled: false
+      - type: domain
+        value: "static-web.jjdsn.vip"
+        enabled: false
+      - type: domain
+        value: "newshare.bgw.live"
+        enabled: false
+      - type: domain
+        value: "newshare.bgw.world"
+        enabled: false
+      - type: domain
+        value: "newshare.bwb.global"
+        enabled: false
+      - type: domain
+        value: "newshare.bwb.online"
+        enabled: false
+  - name: "Observed third-party wallet / chain / partner endpoints"
+    rules:
+      - type: domain-suffix
+        value: "walletconnect.org"
+      - type: domain-suffix
+        value: "web3modal.org"
+      - type: domain
+        value: "arb-mainnet.g.alchemy.com"
+      - type: domain
+        value: "arb1.arbitrum.io"
+      - type: domain
+        value: "cca-lite.coinbase.com"
+      - type: domain
+        value: "app.fiat24.com"
+      - type: domain
+        value: "polymarket-upload.s3.us-east-2.amazonaws.com"
+  - name: "Observed third-party telemetry / push endpoints"
+    comments:
+      - "Enable only if push or telemetry traffic also needs the same policy."
+    rules:
+      - type: domain
+        value: "log.noxiaohao.com"
+        enabled: false
+      - type: domain
+        value: "notifier-configs.airbrake.io"
+        enabled: false
+      - type: domain
+        value: "pushstat-hk.engagelab.com"
+        enabled: false
+      - type: domain
+        value: "sis-hk.push.engage7.com"
+        enabled: false
+      - type: domain
+        value: "sis-hk.push.engageforce.net"
+        enabled: false
+      - type: domain
+        value: "sis-hk.push.theengagelab.com"
+        enabled: false
+  - name: "Observed Apple system domains in the same capture, intentionally not matched."
+    rules:
+      - type: domain
+        value: "gateway.icloud.com.cn"
+        enabled: false
+      - type: domain
+        value: "ocsp2.g.aaplimg.com"
+        enabled: false
+      - type: domain
+        value: "wps.v.aaplimg.com"
+        enabled: false

@@ -1,0 +1,43 @@
+# NAME: UR
+# AUTHOR: ProxyKit
+# UPDATED: 2026-07-06
+# SOURCE: iOS UR App Loon capture (UR.zip)
+# NOTE: Domains observed from DoH queries in the capture. Apple system domains are intentionally excluded.
+
+# UR core domains
+HOST-SUFFIX,ur.app
+
+# Observed UR endpoints covered by ur.app
+# HOST,api.ur.app
+# HOST,get.ur.app
+# HOST,nft.ur.app
+# HOST,static.ur.app
+
+# Observed UR business dependencies
+HOST-SUFFIX,markfi.xyz
+HOST-SUFFIX,turnkey.com
+HOST,rpc.mantle.xyz
+HOST,www.turingfraud.net
+
+# Observed endpoints covered by dependency rules above
+# HOST,a.markfi.xyz
+# HOST,cdn.markfi.xyz
+# HOST,api.turnkey.com
+# HOST,auth.turnkey.com
+
+# Observed shared SDK / support / performance endpoints used by the UR app
+# Enable only if these shared services also need to follow the UR policy.
+# HOST,api.shorebird.dev
+# HOST,c.go-mpulse.net
+# HOST,s.go-mpulse.net
+# HOST,ekr.zdassets.com
+# HOST,static.zdassets.com
+
+# Observed Apple system domains in the same capture, intentionally not matched.
+# HOST,init-p01md.apple.com
+# HOST,itunes.apple.com
+# HOST,ocsp2.g.aaplimg.com
+# HOST,setup.icloud.com
+# HOST,smp-device-content.apple.com
+# HOST,www.apple.com
+# HOST,xp.g.aaplimg.com

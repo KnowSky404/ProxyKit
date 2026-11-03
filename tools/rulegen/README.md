@@ -1,0 +1,59 @@
+# rulegen
+
+Bun + TypeScript 规则生成器。入口是 `src/cli.ts`，直接运行源码，不需要打包，也不在运行时联网。依赖通过仓库根目录 `bun.lock` 固定。
+
+## 安装与命令
+
+使用 Bun **1.4.4** 和官方 sing-box **1.10.7**。默认输入和输出基于 CLI 模块所在的仓库根目录定位，不依赖当前工作目录。
+
+```sh
+bun install --frozen-lockfile
+bun tools/rulegen/src/cli.ts --help
+bun tools/rulegen/src/cli.ts validate
+bun tools/rulegen/src/cli.ts build
+bun tools/rulegen/src/cli.ts check
+```
+
+| 参数 | 用途 |
+| --- | --- |
+| `build` | 验证后构建全部规则，默认三端输出 |
+| `validate` | 验证规则和目标兼容性，不写文件 |
+| `check` | 重新生成并比较已有产物，漂移返回非零 |
+| `--input DIR` | 输入 YAML 目录，默认 `shared/rules/` |
+| `--output ROOT` | 输出根目录，默认工具仓库根目录 |
+| `--target loon,quantumultx,sing-box` | 逗号分隔目标子集；默认 `all` |
+| `--sing-box PATH` | 官方编译器路径，默认从 PATH 查找 |
+| `--help` | 帮助信息 |
+
+输出目录布局固定为 `ROOT/loon/rules/`、`ROOT/quantumultx/filters/` 和 `ROOT/sing-box/rules/`。所选目标目录内的 `.list` 或 `.json` / `.srs` 均为受管理产物，`build` 会移除源目录中已不存在的同类产物，`check` 则报告它们；因此外部调用应使用专用输出根目录。显式相对路径按调用者当前目录解析；省略路径时始终使用工具自身默认目录。外部仓库应显式给出输入与输出，避免将私有产物写入公开生成器 checkout：
+
+```sh
+bun /opt/ProxyKit/tools/rulegen/src/cli.ts build \
+  --input /work/private/shared/rules \
+  --output /work/private/generated \
+  --target all --sing-box /opt/sing-box/sing-box
+```
+
+也可以只生成文本规则：
+
+```sh
+bun tools/rulegen/src/cli.ts build --target loon,quantumultx --output /tmp/proxykit-rules
+```
+
+选择 sing-box 目标时同时生成 JSON 和 SRS；编译器缺失、版本不符、编译失败或解析验证失败均不能当作成功。为保证 SRS 字节可重复，编译器固定为 1.10.7；升级须同时更新 CI 校验和、文档、测试及全部产物。消费者最低 1.10.0，与构建工具的固定版本分别管理。
+
+## 校验和维护
+
+[格式文档](../../docs/rule-format.md) 定义 Schema v1。未知字段、类型错误、非法域名、CIDR、重复条件、冲突选项及无启用规则的规则集均拒绝。诊断只应定位结构位置，不输出域名、IP、YAML 内容或编译器可能包含输入数据的原始错误。生成器不读取远程规则，不解析节点订阅，不修改公共或私人远程仓库。
+
+```sh
+bun run typecheck
+SING_BOX_BIN=/opt/sing-box/sing-box bun test
+bun run rules:validate
+bun run rules:build
+bun run rules:check
+```
+
+测试覆盖 Schema、两类域名与 CIDR、顺序、重复检测、禁用和注释、目标格式、历史列表快照、跨客户端匹配集合、确定性、仓库外调用、漂移及真实官方 SRS 编译和解析。既有 `tests/loon/` 继续执行。迁移快照仅作为回归证据，不能作为第二份维护源；修改规则时应明确说明与历史快照的预期差异。
+
+[架构说明](../../docs/architecture.md) 记录模块职责与产物策略；[Private 集成](../../docs/private-integration.md) 提供固定 Commit 引用方式。
