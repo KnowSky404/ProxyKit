@@ -48,6 +48,26 @@
 
 `runtime.test.ts` 使用单对象多字段、多值数组验证 Source/Binary 的域名/IP OR 匹配，并覆盖外层域名条件并入地址组以及显式逻辑 AND 的交集行为。主配置迁移要求见[规则格式说明](rule-format.md#从逐条对象迁移到单对象)。这些证据不扩大真机、远程更新或 DNS 等价的验证范围。
 
+## 2026-11-04 sing-box 官方对齐复核
+
+以 `aa17e95` 为生成器基线，对照官方文档、固定编译器 v1.14.4（`c005f35300ce76427dc285481ec5695f5b179cd2`）源码及其固定的 `sing/common/domain` 匹配实现复核。规则源和全部 JSON/SRS 匹配条件未调整。
+
+| 检查项 | 官方依据与复核结果 |
+| --- | --- |
+| 字段、数组与组合 | [Headless Rule](https://sing-box.sagernet.org/configuration/rule-set/headless-rule/#default-fields) 中的 `domain`、`domain_suffix`、目标 `ip_cidr` 属于同一 OR 组；IPv4/IPv6 可共用 `ip_cidr` 数组。官方也允许单元素使用标量，生成器统一使用合法数组；独立解析器仅校验本项目生成子集。 |
+| 格式和最低读取版本 | [Source Format](https://sing-box.sagernet.org/configuration/rule-set/source-format/) 将 version 2 对应到 1.10.0；现有条件不使用更高版本专属字段。官方 1.10.0 和 1.14.4 均读取并匹配全部六组提交的 JSON/SRS。 |
+| 精确域名和后缀 | 按 [1.9.0 起的后缀语义](https://sing-box.sagernet.org/migration/#domain_suffix-behavior-update)，无前导点的后缀包含根域与标签边界内子域。复核根域、多级子域、假后缀和精确域名的子域反例；同名精确/后缀在官方域名树中合并的回读规范化符合其实现。 |
+| SRS 编译与回读 | [官方编译实现](https://github.com/SagerNet/sing-box/blob/v1.14.4/cmd/sing-box/cmd_rule_set_compile.go)和[二进制实现](https://github.com/SagerNet/sing-box/blob/v1.14.4/common/srs/binary.go)实际编译、反编译；IP 条件按同地址族的地址并集比较。补查 IPv6 大写、IPv4 映射 IPv6、零长度前缀及相邻/重叠/不连续网段，无新差异。 |
+| 主配置组合 | [Route Rule](https://sing-box.sagernet.org/configuration/route/rule/#default-fields) 的单普通对象并入外层组、显式逻辑 AND 和不预解析约束继续适用；不以规则集声明替代主配置要求。 |
+
+额外审计在临时目录执行：32 组固定种子的域名/CIDR 组合，以独立 Python `ipaddress` 与域名标签边界计算期望；加上六组现有规则的固定案例和启用条件，官方 1.10.0/1.14.4 × Source/Binary 共 **4,728 次匹配检查**全部一致。另检查 IPv4 映射 IPv6 与 IPv4 的地址族边界。合成输入仅使用保留域名和文档地址，未读取私人规则。
+
+最低消费者另用官方 1.10.0（`137832ff3ef3ab4ba5fc7d50c227253b77a0d68b`）运行 **15 项本地回环路由测试**：加载六组规则的两种格式，验证精确域名、后缀、IPv4/IPv6 目标和策略顺序。使用 1.10 配置字段，省略较新版的 `action` 和 hosts DNS 配置；该次测试不覆盖新 DNS 配置或更高版本的外层组合行为。编译始终使用固定的 1.14.4，没有更改 CI 工具链。
+
+此审计发现并修正测试启动时机问题：只观察 `tcp server started` 会在首个请求上偶发误判。[官方 1.10.0 启动顺序](https://github.com/SagerNet/sing-box/blob/v1.10.0/box.go)在 inbound 启动后仍执行 router PostStart；[1.14.4](https://github.com/SagerNet/sing-box/blob/v1.14.4/box.go)也在监听后继续生命周期初始化。测试现在跨日志块保留监听端口，并等待 `sing-box started` 后再发送流量；不加入固定延时，也不输出原始子进程日志。
+
+本轮未发现当前四类条件生成器的新语义缺陷。这是已支持子集和指定版本的验证结果，不代表实现官方全部字段，也不证明任意主配置、远程更新、设备 VPN 或业务连通性。额外跨版本组合验证为一次性审计证据，日常 CI 仍执行固定编译器的完整回归。
+
 ## 推荐入口与输出
 
 先按 [rulegen 安装说明](../tools/rulegen/README.md) 安装固定 Bun 和官方编译器，设置 `PATH` 与 `SING_BOX_BIN` 指向同一官方二进制。生成器不会联网下载工具。仓库内完整只读验证：
