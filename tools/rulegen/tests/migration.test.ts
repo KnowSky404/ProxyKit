@@ -51,7 +51,7 @@ describe("all current sources and generated client artifacts", () => {
         const path = target === "loon" ? "loon/rules" : "quantumultx/filters";
         expect(readFileSync(join(root, path, `${name}.list`), "utf8")).toBe(renderList(data, target));
       }
-      expect(renderList(data, "quantumultx").replaceAll("HOST-SUFFIX,", "DOMAIN-SUFFIX,").replaceAll("HOST,", "DOMAIN,")).toBe(renderList(data, "loon"));
+      expect(renderList(data, "quantumultx").replaceAll("HOST-SUFFIX,", "DOMAIN-SUFFIX,").replaceAll("HOST,", "DOMAIN,").replaceAll("IP6-CIDR,", "IP-CIDR6,")).toBe(renderList(data, "loon"));
     });
     test(`${name}: compact sing-box JSON preserves all enabled predicates and per-field order`, () => {
       const expected = data.groups.flatMap(group => group.rules).filter(rule => rule.enabled !== false);

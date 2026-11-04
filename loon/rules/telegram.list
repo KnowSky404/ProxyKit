@@ -1,0 +1,39 @@
+# NAME: Telegram
+# AUTHOR: KnowSky404
+# UPDATED: 2026-11-04
+# SOURCE: https://core.telegram.org/resources/cidr.txt; https://core.telegram.org/api/links; https://desktop.telegram.org; https://telegram.org/blog/instant-view; https://telegram.org/blog/video-messages-and-telescope
+# NOTE: Official service domains and the complete published CIDR snapshot. Third-party Mini Apps, external media and arbitrary peer-to-peer call addresses are outside this set. Routing policy is selected by the consumer.
+
+# Official service and link domains
+# Includes web/API services, Desktop updates, Telegraph and Telescope.
+DOMAIN-SUFFIX,telegram.org
+DOMAIN-SUFFIX,t.me
+DOMAIN-SUFFIX,telegram.me
+DOMAIN-SUFFIX,telegram.dog
+DOMAIN-SUFFIX,tdesktop.com
+DOMAIN-SUFFIX,telegra.ph
+DOMAIN-SUFFIX,telesco.pe
+
+# Official IPv4 networks
+# Snapshot of https://core.telegram.org/resources/cidr.txt, checked 2026-11-04; order preserved.
+# Loon: no-resolve. QX: compatibility policy token; override with filter_remote force-policy.
+# sing-box: consumer must not resolve domains before this rule set.
+IP-CIDR,91.108.56.0/22,no-resolve
+IP-CIDR,91.108.4.0/22,no-resolve
+IP-CIDR,91.108.8.0/22,no-resolve
+IP-CIDR,91.108.16.0/22,no-resolve
+IP-CIDR,91.108.12.0/22,no-resolve
+IP-CIDR,149.154.160.0/20,no-resolve
+IP-CIDR,91.105.192.0/23,no-resolve
+IP-CIDR,91.108.20.0/22,no-resolve
+IP-CIDR,185.76.151.0/24,no-resolve
+
+# Official IPv6 networks
+# Snapshot of https://core.telegram.org/resources/cidr.txt, checked 2026-11-04; order preserved.
+# Loon: no-resolve. QX: compatibility policy token; override with filter_remote force-policy.
+# sing-box: consumer must not resolve domains before this rule set.
+IP-CIDR6,2001:b28:f23d::/48,no-resolve
+IP-CIDR6,2001:b28:f23f::/48,no-resolve
+IP-CIDR6,2001:67c:4e8::/48,no-resolve
+IP-CIDR6,2001:b28:f23c::/48,no-resolve
+IP-CIDR6,2a0a:f280::/32,no-resolve

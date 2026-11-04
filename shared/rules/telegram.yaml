@@ -1,0 +1,98 @@
+# Canonical source; regenerate client files with bun run rules:build.
+version: 1
+metadata:
+  name: "Telegram"
+  author: "KnowSky404"
+  updated: "2026-11-04"
+  source: "https://core.telegram.org/resources/cidr.txt; https://core.telegram.org/api/links; https://desktop.telegram.org; https://telegram.org/blog/instant-view; https://telegram.org/blog/video-messages-and-telescope"
+  note: "Official service domains and the complete published CIDR snapshot. Third-party Mini Apps, external media and arbitrary peer-to-peer call addresses are outside this set. Routing policy is selected by the consumer."
+compatibility:
+  quantumultx_no_resolve: legacy-policy-token
+  sing_box_no_resolve: require-no-pre-resolution
+groups:
+  - name: "Official service and link domains"
+    comments:
+      - "Includes web/API services, Desktop updates, Telegraph and Telescope."
+    rules:
+      - type: domain-suffix
+        value: "telegram.org"
+      - type: domain-suffix
+        value: "t.me"
+      - type: domain-suffix
+        value: "telegram.me"
+      - type: domain-suffix
+        value: "telegram.dog"
+      - type: domain-suffix
+        value: "tdesktop.com"
+      - type: domain-suffix
+        value: "telegra.ph"
+      - type: domain-suffix
+        value: "telesco.pe"
+  - name: "Official IPv4 networks"
+    comments:
+      - "Snapshot of https://core.telegram.org/resources/cidr.txt, checked 2026-11-04; order preserved."
+      - "Loon: no-resolve. QX: compatibility policy token; override with filter_remote force-policy."
+      - "sing-box: consumer must not resolve domains before this rule set."
+    rules:
+      - type: ipv4-cidr
+        value: "91.108.56.0/22"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "91.108.4.0/22"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "91.108.8.0/22"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "91.108.16.0/22"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "91.108.12.0/22"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "149.154.160.0/20"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "91.105.192.0/23"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "91.108.20.0/22"
+        options:
+          no_resolve: true
+      - type: ipv4-cidr
+        value: "185.76.151.0/24"
+        options:
+          no_resolve: true
+  - name: "Official IPv6 networks"
+    comments:
+      - "Snapshot of https://core.telegram.org/resources/cidr.txt, checked 2026-11-04; order preserved."
+      - "Loon: no-resolve. QX: compatibility policy token; override with filter_remote force-policy."
+      - "sing-box: consumer must not resolve domains before this rule set."
+    rules:
+      - type: ipv6-cidr
+        value: "2001:b28:f23d::/48"
+        options:
+          no_resolve: true
+      - type: ipv6-cidr
+        value: "2001:b28:f23f::/48"
+        options:
+          no_resolve: true
+      - type: ipv6-cidr
+        value: "2001:67c:4e8::/48"
+        options:
+          no_resolve: true
+      - type: ipv6-cidr
+        value: "2001:b28:f23c::/48"
+        options:
+          no_resolve: true
+      - type: ipv6-cidr
+        value: "2a0a:f280::/32"
+        options:
+          no_resolve: true

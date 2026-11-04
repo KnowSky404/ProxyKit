@@ -158,3 +158,17 @@ bun test
 ```
 
 修改 YAML、生成全部客户端、检查匹配与候选项、更新索引，随后提交源和产物。官方 [Source Format 文档](https://sing-box.sagernet.org/configuration/rule-set/source-format/)说明格式版本和编译命令；本项目固定 version 2、最低消费者 1.10.0 和编译器 1.14.4，不随上游最新 Schema 自动升级。
+
+## IPv6 客户端语法与等价检查
+
+共享 YAML 的 `type: ipv6-cidr` 由生成器转换为不同客户端语法：
+
+| 目标 | IPv6 条件形式 |
+| --- | --- |
+| Loon | `IP-CIDR6,2001:db8::/32,no-resolve` |
+| Quantumult X | `IP6-CIDR,2001:db8::/32,no-resolve` |
+| sing-box | `"ip_cidr": ["2001:db8::/32"]` |
+
+以上为语法示例，`2001:db8::/32` 是文档示例网段，不应加入业务规则。QX 示例第三字段仍是须由 `force-policy` 覆盖的兼容策略文本；sing-box 仍依赖主配置不预解析，详见上方解析兼容边界。
+
+跨端文本等价检查在转换 `HOST` / `HOST-SUFFIX` 的同时，必须将 QX 的 `IP6-CIDR` 归一化为 Loon 的 `IP-CIDR6`，再比较顺序、值、注释、启用状态和选项。`tools/rulegen/tests/migration.test.ts` 对所有当前集合执行这一检查；Telegram 的 IPv6 条件及 `fixtures/matches.json` 中的网段内外边界样例同时覆盖独立解析与官方 sing-box 的 JSON/SRS 运行时匹配。关键字差异本身是预期客户端适配，不能据此修改正确的生成器输出。
