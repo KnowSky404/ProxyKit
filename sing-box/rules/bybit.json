@@ -2,83 +2,25 @@
   "version": 2,
   "rules": [
     {
-      "domain_suffix": [
-        "bybit.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bybit.biz"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "jbybit.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "byapps.net"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bycsi.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "byabcde.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "byabcd.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bybdc6.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "byd3c3.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bynbc.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "ng-dex.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "wsot2022.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "ffbbbdc6d3c353211fe2ba39c9f744cd.com"
-      ]
-    },
-    {
       "domain": [
-        "sc-abtest.ffe390afd658c19dcbf707e0597b846d.de"
-      ]
-    },
-    {
-      "domain": [
-        "d1znqpii6yeci9.cloudfront.net"
-      ]
-    },
-    {
-      "domain": [
+        "sc-abtest.ffe390afd658c19dcbf707e0597b846d.de",
+        "d1znqpii6yeci9.cloudfront.net",
         "d2twlc9j3xrrm5.cloudfront.net"
+      ],
+      "domain_suffix": [
+        "bybit.com",
+        "bybit.biz",
+        "jbybit.com",
+        "byapps.net",
+        "bycsi.com",
+        "byabcde.com",
+        "byabcd.com",
+        "bybdc6.com",
+        "byd3c3.com",
+        "bynbc.com",
+        "ng-dex.com",
+        "wsot2022.com",
+        "ffbbbdc6d3c353211fe2ba39c9f744cd.com"
       ]
     }
   ]

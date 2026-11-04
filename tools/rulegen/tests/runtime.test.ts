@@ -75,8 +75,11 @@ async function withRuntime(config: unknown, directory: string, run: (port: numbe
 function fixture(directory: string, format: Format, matched: number, priority: number, fallback: number) {
   const sources = {
     probe: { version: 2, rules: [
-      { domain: ["exact.example.test"] }, { domain_suffix: ["suffix.example.test"] },
-      { ip_cidr: ["192.0.2.0/24"] }, { ip_cidr: ["2001:db8::/32"] },
+      {
+        domain: ["exact.example.test", "second.example.test"],
+        domain_suffix: ["suffix.example.test", "another.example.test"],
+        ip_cidr: ["192.0.2.0/24", "2001:db8::/32"],
+      },
     ] },
     priority: { version: 2, rules: [{ domain: ["api.suffix.example.test"] }] },
   };
@@ -159,8 +162,8 @@ describe("official sing-box runtime with isolated loopback traffic", () => {
     test(`${format}: actual HTTP routing selects outbounds using exact, suffix and IP destination matchers`, async () => environment(async (directory, [matched, priority, fallback]) => {
       const config = fixture(directory, format, matched, priority, fallback);
       await withRuntime(config, directory, async port => {
-        const positives = ["exact.example.test", "suffix.example.test", "sub.suffix.example.test", "deep.sub.suffix.example.test", "192.0.2.0", "192.0.2.255", "[2001:db8::]", "[2001:db8:ffff:ffff:ffff:ffff:ffff:ffff]"];
-        const negatives = ["sub.exact.example.test", "badexact.example.test", "badsuffix.example.test", "suffix.example.test.evil.test", "192.0.1.255", "192.0.3.0", "[2001:db7:ffff:ffff:ffff:ffff:ffff:ffff]", "[2001:db9::]"];
+        const positives = ["exact.example.test", "second.example.test", "suffix.example.test", "sub.suffix.example.test", "deep.sub.suffix.example.test", "sub.another.example.test", "192.0.2.0", "192.0.2.255", "[2001:db8::]", "[2001:db8:ffff:ffff:ffff:ffff:ffff:ffff]"];
+        const negatives = ["sub.exact.example.test", "sub.second.example.test", "badexact.example.test", "badsuffix.example.test", "suffix.example.test.evil.test", "192.0.1.255", "192.0.3.0", "[2001:db7:ffff:ffff:ffff:ffff:ffff:ffff]", "[2001:db9::]"];
         for (const target of positives) expect(await request(port, target)).toBe("matched");
         for (const target of negatives) expect(await request(port, target)).toBe("fallback");
         expect(await request(port, "api.suffix.example.test")).toBe("priority");
@@ -177,6 +180,27 @@ describe("official sing-box runtime with isolated loopback traffic", () => {
         expect(await request(port, "ip-target.example.test")).toBe("matched");
       });
     }), 20000);
+
+    for (const conjunction of [false, true]) {
+      test(`${format}: compact rule-set with outer domains uses ${conjunction ? "explicit logical AND" : "destination-group OR"}`, async () => environment(async (directory, [matched, priority, fallback]) => {
+        const config = fixture(directory, format, matched, priority, fallback);
+        const domain = ["api.suffix.example.test", "outer-only.example.test"];
+        const action = { action: "route", outbound: "matched" };
+        config.route.rules = [
+          conjunction
+            ? { type: "logical", mode: "and", rules: [{ domain }, { rule_set: ["probe"] }], ...action }
+            : { domain, rule_set: ["probe"], ...action },
+          { action: "route", outbound: "fallback" },
+        ];
+        await withRuntime(config, directory, async port => {
+          expect(await request(port, "api.suffix.example.test")).toBe("matched");
+          for (const target of ["exact.example.test", "outer-only.example.test", "192.0.2.7"]) {
+            expect(await request(port, target)).toBe(conjunction ? "fallback" : "matched");
+          }
+          expect(await request(port, "neither.example.test")).toBe("fallback");
+        });
+      }), 20000);
+    }
   }
 
   for (const format of ["source", "binary"] as const) {

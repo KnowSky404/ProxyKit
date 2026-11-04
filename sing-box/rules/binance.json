@@ -2,152 +2,40 @@
   "version": 2,
   "rules": [
     {
-      "domain_suffix": [
-        "binance.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "binance.info"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "binance.click"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "servicesbinance.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bsappapi.cc"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bnbstatic.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bscdnweb.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "binance.cloud"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "binance.gg"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "binance.im"
-      ]
-    },
-    {
       "domain": [
-        "api.saasexch.com"
-      ]
-    },
-    {
-      "domain": [
-        "api.saasexch.co"
-      ]
-    },
-    {
-      "domain": [
-        "d3sknckuh1o9tg.cloudfront.net"
-      ]
-    },
-    {
-      "domain": [
-        "fmbxlntehddr.oss-cn-shenzhen.aliyuncs.com"
-      ]
-    },
-    {
-      "domain": [
+        "api.saasexch.com",
+        "api.saasexch.co",
+        "d3sknckuh1o9tg.cloudfront.net",
+        "fmbxlntehddr.oss-cn-shenzhen.aliyuncs.com",
         "upload-bnbstatic-com.s3.ap-northeast-1.amazonaws.com"
-      ]
-    },
-    {
+      ],
+      "domain_suffix": [
+        "binance.com",
+        "binance.info",
+        "binance.click",
+        "servicesbinance.com",
+        "bsappapi.cc",
+        "bnbstatic.com",
+        "bscdnweb.com",
+        "binance.cloud",
+        "binance.gg",
+        "binance.im"
+      ],
       "ip_cidr": [
-        "106.15.179.166/32"
-      ]
-    },
-    {
-      "ip_cidr": [
-        "116.62.79.64/32"
-      ]
-    },
-    {
-      "ip_cidr": [
-        "120.24.233.110/32"
-      ]
-    },
-    {
-      "ip_cidr": [
-        "47.106.171.207/32"
-      ]
-    },
-    {
-      "ip_cidr": [
-        "39.108.55.122/32"
-      ]
-    },
-    {
-      "ip_cidr": [
-        "39.108.179.41/32"
-      ]
-    },
-    {
-      "ip_cidr": [
-        "39.108.239.197/32"
-      ]
-    },
-    {
-      "ip_cidr": [
-        "43.145.17.249/32"
-      ]
-    },
-    {
-      "ip_cidr": [
-        "47.106.103.72/32"
-      ]
-    },
-    {
-      "ip_cidr": [
-        "47.106.116.105/32"
-      ]
-    },
-    {
-      "ip_cidr": [
-        "47.106.125.50/32"
-      ]
-    },
-    {
-      "ip_cidr": [
-        "106.53.165.44/32"
-      ]
-    },
-    {
-      "ip_cidr": [
-        "114.132.46.122/32"
-      ]
-    },
-    {
-      "ip_cidr": [
-        "119.23.63.226/32"
-      ]
-    },
-    {
-      "ip_cidr": [
+        "106.15.179.166/32",
+        "116.62.79.64/32",
+        "120.24.233.110/32",
+        "47.106.171.207/32",
+        "39.108.55.122/32",
+        "39.108.179.41/32",
+        "39.108.239.197/32",
+        "43.145.17.249/32",
+        "47.106.103.72/32",
+        "47.106.116.105/32",
+        "47.106.125.50/32",
+        "106.53.165.44/32",
+        "114.132.46.122/32",
+        "119.23.63.226/32",
         "120.77.173.49/32"
       ]
     }

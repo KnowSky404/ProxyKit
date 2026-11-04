@@ -47,11 +47,16 @@ export function renderList(set: RuleSet, target: "loon" | "quantumultx"): string
 
 export function renderSingBox(set: RuleSet): string {
   validateTarget(set, "sing-box");
-  const fields: Record<RuleType, string> = { domain: "domain", "domain-suffix": "domain_suffix", "ipv4-cidr": "ip_cidr", "ipv6-cidr": "ip_cidr" };
-  // One match per headless rule keeps source order and OR semantics explicit.
+  const combined = { domain: [] as string[], domain_suffix: [] as string[], ip_cidr: [] as string[] };
+  const fields: Record<RuleType, keyof typeof combined> = { domain: "domain", "domain-suffix": "domain_suffix", "ipv4-cidr": "ip_cidr", "ipv6-cidr": "ip_cidr" };
+  // These destination-address fields share OR semantics in one default rule.
+  // Preserve source order within each array, including mixed IPv4/IPv6 CIDRs.
   // JSON/SRS cannot encode comments, disabled rules or resolution policy.
-  const rules = set.groups.flatMap(group => group.rules)
-    .filter(rule => rule.enabled !== false)
-    .map(rule => ({ [fields[rule.type]]: [rule.value] }));
-  return JSON.stringify({ version: 2, rules }, null, 2) + "\n";
+  for (const group of set.groups) {
+    for (const rule of group.rules) {
+      if (rule.enabled !== false) combined[fields[rule.type]].push(rule.value);
+    }
+  }
+  const rule = Object.fromEntries(Object.entries(combined).filter(([, values]) => values.length > 0));
+  return JSON.stringify({ version: 2, rules: [rule] }, null, 2) + "\n";
 }

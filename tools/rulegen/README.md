@@ -57,7 +57,7 @@ bun tools/rulegen/src/cli.ts build --target loon,quantumultx --output /tmp/proxy
 
 选择 sing-box 目标时同时生成 JSON 和 SRS；编译器缺失、版本不符、编译失败或解析验证失败均不能当作成功。为保证 SRS 字节可重复，编译器固定为 1.14.4；升级须同时更新 CI 校验和、文档、测试及全部产物。消费者最低 1.10.0，与构建工具的固定版本分别管理。
 
-本次从 1.10.7 升级到 1.14.4 后已重新生成并通过官方 CLI 解析全部五组 SRS；输出字节与原产物一致。继续使用 Source Rule Set version 2：当前域名和 CIDR 条件不需要更高格式版本，升级编译器不提高消费者最低版本。
+每个 sing-box 集合将全部启用条件汇总到一个普通对象的 `domain`、`domain_suffix` 和 `ip_cidr` 数组，省略空字段，并保留各数组内的源顺序。继续使用 Source Rule Set version 2；聚合不会提高消费者最低版本。官方反编译可能合并相邻或重叠 CIDR，校验按地址族比较地址并集。旧版逐条对象到单对象的外层条件组合变化及显式逻辑 AND 写法，见[规则格式与迁移边界](../../docs/rule-format.md#从逐条对象迁移到单对象)。
 
 ## 校验和维护
 

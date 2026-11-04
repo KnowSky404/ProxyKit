@@ -145,13 +145,76 @@ describe("rulegen standalone CLI", () => {
 describe("official sing-box compiler integration", () => {
   test("pinned compiler produces deterministic valid SRS for IPv4, IPv6 and domains", () => {
     checkCompiler(compiler);
-    const json = JSON.stringify({ version: 2, rules: [
-      { domain: ["example.com"] }, { domain_suffix: ["example.net"] },
-      { ip_cidr: ["198.51.100.0/24"] }, { ip_cidr: ["2001:0db8::/32"] },
-    ] });
+    const json = JSON.stringify({ version: 2, rules: [{
+      domain: ["example.com", "second.example.com"], domain_suffix: ["example.net"],
+      ip_cidr: ["198.51.100.0/24", "2001:0db8::/32"],
+    }] });
     const first = compileSrs(json, compiler);
     expect(first.length).toBeGreaterThan(8);
     expect(compileSrs(json, compiler)).toEqual(first);
+  });
+  test("combined adjacent and overlapping CIDRs survive official coalescing with the same address union", () => {
+    const json = JSON.stringify({ version: 2, rules: [{
+      ip_cidr: ["198.51.100.0/25", "198.51.100.128/25", "198.51.100.0/24", "203.0.113.7/32", "2001:db8::/33", "2001:db8:8000::/33"],
+    }] });
+    const binary = join(directory, "combined.srs");
+    writeFileSync(binary, compileSrs(json, compiler));
+    for (const [probe, expected] of [
+      ["198.51.100.0", true], ["198.51.100.255", true], ["198.51.99.255", false], ["198.51.101.0", false],
+      ["203.0.113.7", true], ["203.0.113.6", false], ["203.0.113.8", false],
+      ["2001:db8::", true], ["2001:db8:ffff:ffff:ffff:ffff:ffff:ffff", true],
+      ["2001:db7:ffff:ffff:ffff:ffff:ffff:ffff", false], ["2001:db9::", false], ["::ffff:198.51.100.1", false],
+    ] as const) {
+      const result = Bun.spawnSync([compiler, "rule-set", "match", "--format", "binary", binary, probe], { stdout: "pipe", stderr: "pipe" });
+      expect(result.exitCode).toBe(0);
+      expect(new TextDecoder().decode(result.stderr).includes("match rules.[")).toBe(expected);
+    }
+  });
+  test("round-trip verification still rejects expanded gaps, missing prefixes and address-family changes", () => {
+    const rule = { ip_cidr: ["198.51.100.0/25", "198.51.101.0/25"] };
+    const source = JSON.stringify({ version: 2, rules: [rule] });
+    for (const ip_cidr of [
+      ["198.51.100.0/23"],
+      ["198.51.100.0/25"],
+      ["::ffff:198.51.100.0/121", "::ffff:198.51.101.0/121"],
+    ]) {
+      const decoded = JSON.stringify({ version: 2, rules: [{ ip_cidr }] });
+      const executable = fakeCompiler(`if [ "$2" = decompile ]; then\ncat <<'JSON' >"$4"\n${decoded}\nJSON\nelse\nprintf 'fixture' >"$4"\nfi`);
+      expect(() => compileSrs(source, executable)).toThrow("round-trip changed");
+    }
+  });
+  test("schema-valid same-root exact/suffix pairs build and verify without losing source predicates", () => {
+    const overlapping = structuredClone(source) as RuleSet;
+    overlapping.groups[0].rules = [
+      { type: "domain", value: "example.com" },
+      { type: "domain-suffix", value: "example.com" },
+      { type: "domain", value: "only.example.net" },
+    ];
+    writeFileSync(join(input, "private-name.yaml"), JSON.stringify(overlapping));
+    const args = ["--input", input, "--output", output, "--sing-box", compiler];
+    expect(run("build", ...args).exitCode).toBe(0);
+    expect(run("verify", ...args).exitCode).toBe(0);
+    const json = JSON.parse(readFileSync(join(output, "sing-box/rules/private-name.json"), "utf8"));
+    expect(json.rules).toEqual([{ domain: ["example.com", "only.example.net"], domain_suffix: ["example.com"] }]);
+    const binary = join(output, "sing-box/rules/private-name.srs");
+    for (const [probe, expected] of [
+      ["example.com", true], ["api.example.com", true], ["badexample.com", false],
+      ["only.example.net", true], ["sub.only.example.net", false], ["other.example.net", false],
+    ] as const) {
+      const result = Bun.spawnSync([compiler, "rule-set", "match", "--format", "binary", binary, probe], { stdout: "pipe", stderr: "pipe" });
+      expect(result.exitCode).toBe(0);
+      expect(new TextDecoder().decode(result.stderr).includes("match rules.[")).toBe(expected);
+    }
+  });
+  test("domain normalization rejects exact-to-suffix expansion and loss of suffix matching", () => {
+    for (const [expected, actual] of [
+      [{ domain: ["example.com"] }, { domain_suffix: ["example.com"] }],
+      [{ domain: ["example.com"], domain_suffix: ["example.com"] }, { domain: ["example.com"] }],
+    ]) {
+      const decoded = JSON.stringify({ version: 2, rules: [actual] });
+      const executable = fakeCompiler(`if [ "$2" = decompile ]; then\ncat <<'JSON' >"$4"\n${decoded}\nJSON\nelse\nprintf 'fixture' >"$4"\nfi`);
+      expect(() => compileSrs(JSON.stringify({ version: 2, rules: [expected] }), executable)).toThrow("round-trip changed");
+    }
   });
   test("standalone all-target build/check includes verified SRS and is repeatable", () => {
     const args = ["--input", input, "--output", output, "--sing-box", compiler];
