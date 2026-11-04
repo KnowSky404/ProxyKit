@@ -51,15 +51,19 @@ async function withRuntime(config: unknown, directory: string, run: (port: numbe
     const reader = child.stderr.getReader();
     const decoder = new TextDecoder();
     let tail = "";
+    let inboundPort: number | undefined;
     try {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         tail = (tail + decoder.decode(value, { stream: true })).slice(-4096);
         const port = /tcp server started at 127\.0\.0\.1:(\d+)/.exec(tail)?.[1];
-        if (port) ready(Number(port));
+        if (port) inboundPort = Number(port);
+        // Inbound listeners can start before router PostStart binds rule sets.
+        // Keep the port across log chunks and wait for Box.Start to finish too.
+        if (inboundPort && tail.includes("sing-box started")) ready(inboundPort);
       }
-      failed(new Error("Official runtime exited before listening; child output withheld."));
+      failed(new Error("Official runtime exited before startup completed; child output withheld."));
     } finally { reader.releaseLock(); }
   })();
   try { await run(await startup); }
