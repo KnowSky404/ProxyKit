@@ -56,6 +56,42 @@ describe("independent static generated-subset verification", () => {
     expect(matchesRules(parseSingBoxArtifact('{"version":2,"rules":[{"domain_suffix":["example.net"]}]}'), "badexample.net")).toBe(false);
   });
 
+  test("hand-authored combined fields and legacy separate rules preserve the same OR matchers", () => {
+    const combined = '{"version":2,"rules":[{"domain":["exact.example.com","second.example.com"],"domain_suffix":["example.net","example.edu"],"ip_cidr":["198.51.100.0/24","2001:db8::/32"]}]}';
+    const separate = '{"version":2,"rules":[{"domain":["exact.example.com"]},{"domain":["second.example.com"]},{"domain_suffix":["example.net"]},{"domain_suffix":["example.edu"]},{"ip_cidr":["198.51.100.0/24"]},{"ip_cidr":["2001:db8::/32"]}]}';
+    const rules = parseSingBoxArtifact(combined);
+    expect(rules).toEqual(parseSingBoxArtifact(separate));
+    for (const [probe, expected] of [...boundaries, ["second.example.com", true], ["api.example.edu", true]] as [string, boolean][]) {
+      expect(matchesRules(rules, probe)).toBe(expected);
+    }
+  });
+
+  test("sing-box verifies per-field order across interleaved source types and JSON key order", () => {
+    const source = structuredClone(synthetic);
+    source.groups[0].rules.push(
+      { type: "domain", value: "second.example.com" },
+      { type: "domain-suffix", value: "example.org" },
+      { type: "ipv4-cidr", value: "203.0.113.0/24", options: { no_resolve: true } },
+    );
+    const rule = {
+      ip_cidr: ["198.51.100.0/24", "2001:db8::/32", "203.0.113.0/24"],
+      domain_suffix: ["example.net", "example.org"],
+      domain: ["exact.example.com", "second.example.com"],
+    };
+    const artifact = () => JSON.stringify({ version: 2, rules: [rule] });
+    expect(verifyArtifact(artifact(), "sing-box", source)).toEqual({ total: 7, enabled: 7 });
+    for (const field of ["domain", "domain_suffix", "ip_cidr"] as const) {
+      rule[field].reverse();
+      expect(() => verifyArtifact(artifact(), "sing-box", source)).toThrow("differ");
+      rule[field].reverse();
+    }
+    rule.domain.push("disabled.example.org");
+    expect(() => verifyArtifact(artifact(), "sing-box", source)).toThrow("count differs");
+    rule.domain.pop();
+    rule.ip_cidr.pop();
+    expect(() => verifyArtifact(artifact(), "sing-box", source)).toThrow("count differs");
+  });
+
   test("ordinary and rule-looking disabled comments remain inert", () => {
     const rules = parseListArtifact("# note with a comma, still a comment\nDOMAIN,active.example.com\n# DOMAIN,disabled.example.com\n", "loon");
     expect(rules).toHaveLength(1);
@@ -139,8 +175,18 @@ describe("independent static generated-subset verification", () => {
     ["wrong version", '{"version":3,"rules":[{"domain":["private-value.invalid"]}]}'],
     ["empty set", '{"version":2,"rules":[]}'],
     ["unknown predicate", '{"version":2,"rules":[{"domain_keyword":["private-value.invalid"]}]}'],
-    ["combined predicates", '{"version":2,"rules":[{"domain":["private-value.invalid"],"domain_suffix":["example.net"]}]}'],
-    ["multiple values", '{"version":2,"rules":[{"domain":["private-value.invalid","example.net"]}]}'],
+    ["empty rule", '{"version":2,"rules":[{}]}'],
+    ["empty matcher array", '{"version":2,"rules":[{"domain":[]}]}'],
+    ["scalar matcher", '{"version":2,"rules":[{"domain":"private-value.invalid"}]}'],
+    ["non-string later matcher", '{"version":2,"rules":[{"domain":["private-value.invalid",42]}]}'],
+    ["invalid later domain", '{"version":2,"rules":[{"domain":["example.net","https://private-value.invalid"]}]}'],
+    ["invalid later CIDR", '{"version":2,"rules":[{"ip_cidr":["192.0.2.0/24","192.0.3.1/24"]}]}'],
+    ["duplicate values", '{"version":2,"rules":[{"domain":["private-value.invalid","private-value.invalid"]}]}'],
+    ["duplicates across rules", '{"version":2,"rules":[{"domain":["private-value.invalid"]},{"domain":["private-value.invalid"]}]}'],
+    ["unknown mixed predicate", '{"version":2,"rules":[{"domain":["private-value.invalid"],"private-token":true}]}'],
+    ["AND field", '{"version":2,"rules":[{"domain":["private-value.invalid"],"network":["tcp"]}]}'],
+    ["source CIDR", '{"version":2,"rules":[{"source_ip_cidr":["192.0.2.0/24"]}]}'],
+    ["inverted rule", '{"version":2,"rules":[{"domain":["private-value.invalid"],"invert":true}]}'],
     ["unknown root field", '{"version":2,"rules":[{"domain":["private-value.invalid"]}],"private-token":true}'],
   ]) {
     test(`sing-box rejects ${name} within its generated subset`, () => {

@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { ipNumber } from "./model.ts";
 
 // A compiler change may change bytes even when source schema compatibility is retained.
 export const SING_BOX_VERSION = "1.14.4";
@@ -57,19 +58,46 @@ export function checkCompiler(executable = "sing-box"): void {
   }
 }
 
+function canonicalCidrs(values: unknown[]): string[] {
+  // The official IP set coalesces adjacent and overlapping prefixes in a shared array.
+  // Compare their address unions per family without widening gaps or mixing IPv4/IPv6.
+  const ranges = values.map(value => {
+    if (typeof value !== "string") throw new CompilerError("sing-box SRS verification returned invalid CIDR data.");
+    const [address, prefix] = value.split("/");
+    const bits = address.includes(":") ? 128 : 32;
+    const shift = BigInt(bits - Number(prefix ?? bits));
+    const start = (ipNumber(address) >> shift) << shift;
+    return { bits, start, end: start + (1n << shift) - 1n };
+  }).sort((a, b) => a.bits - b.bits || (a.start < b.start ? -1 : a.start > b.start ? 1 : 0));
+  const merged: typeof ranges = [];
+  for (const range of ranges) {
+    const previous = merged.at(-1);
+    if (previous && previous.bits === range.bits && range.start <= previous.end + 1n) {
+      if (range.end > previous.end) previous.end = range.end;
+    } else merged.push({ ...range });
+  }
+  return merged.map(range => `${range.bits}:${range.start.toString(16)}-${range.end.toString(16)}`);
+}
+
 function canonical(value: unknown, field = ""): unknown {
   // The official decoder collapses singleton matcher arrays into scalars.
   if (["domain", "domain_suffix", "ip_cidr"].includes(field)) {
     const values = Array.isArray(value) ? value : [value];
-    return values.map((item) => {
-      if (field !== "ip_cidr" || typeof item !== "string" || !item.includes(":")) return item;
-      const [address, prefix] = item.split("/");
-      return `${new URL(`http://[${address}]`).hostname.slice(1, -1)}/${prefix}`;
-    }).sort();
+    return field === "ip_cidr" ? canonicalCidrs(values) : values.sort();
   }
   if (Array.isArray(value)) return value.map((item) => canonical(item));
   if (value && typeof value === "object") {
-    return Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => [key, canonical(item, key)]));
+    const normalized: Record<string, unknown> = { ...value };
+    if (normalized.domain !== undefined && normalized.domain_suffix !== undefined) {
+      // The official domain trie combines an exact name with its identical suffix.
+      // Only the same root is redundant; do not expand an exact-only domain to a suffix.
+      const domains = Array.isArray(normalized.domain) ? normalized.domain : [normalized.domain];
+      const suffixes = Array.isArray(normalized.domain_suffix) ? normalized.domain_suffix : [normalized.domain_suffix];
+      const remaining = domains.filter(domain => !suffixes.includes(domain));
+      if (remaining.length) normalized.domain = remaining;
+      else delete normalized.domain;
+    }
+    return Object.fromEntries(Object.entries(normalized).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => [key, canonical(item, key)]));
   }
   return value;
 }

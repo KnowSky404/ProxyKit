@@ -34,7 +34,7 @@
 
 1. 从 [sing-box README](../sing-box/README.md) 配置片段创建独立配置，选择本机已有测试 outbound；Source 使用 `.json`/`source`，Binary 使用 `.srs`/`binary`。确认客户端至少 1.10.0；示例 `action: route` 需要 1.11.0 以上。桌面可先运行 `sing-box check -c test.json`。
 2. 在测试配置中启用日志并启动，确认远程规则下载、缓存、加载成功。首次下载失败应记录为资源加载问题，不能记为匹配错误。分别加载 Source/Binary 并执行相同案例，核对命中规则集和 outbound。
-3. 将跨集重叠案例绑定两个可区分的测试 outbound，交换 `route.rules` 顺序，确认先匹配的路由规则决定选择。集合内部是匹配集合，并不自带策略优先级。
+3. 将跨集重叠案例绑定两个可区分的测试 outbound，交换 `route.rules` 顺序，确认先匹配的路由规则决定选择。集合内部是匹配集合，并不自带策略优先级。当前集合为单普通对象；外层同时设置域名/IP 条件时检查地址组 OR 语义，需要交集则使用显式逻辑 AND，见[迁移说明](rule-format.md#从逐条对象迁移到单对象)。
 4. 对 Binance 等带 no-resolve 意图的 IP 集合，确认此前无 `action: resolve`、旧 inbound domain strategy 等预解析行为，且未设置 `rule_set_ip_cidr_match_source`。分别发出直接 IP 与域名请求。额外在隔离配置启用受控 hosts 解析，记录行为差异，然后恢复无预解析配置。不要将集合用作等价 DNS 地址过滤。
 5. 在临时 HTTP 规则服务发布新版 probe，缩短测试配置的 `update_interval` 或重启无旧缓存的测试实例，确认资源重新下载并加载新内容；再验证路由改变。记录更新前后摘要、缓存路径、HTTP 状态与命中结果。正式远程更新/缓存行为仍需在目标平台执行。
 6. 测试结束停止实例并删除测试缓存；不修改系统全局代理或生产配置。

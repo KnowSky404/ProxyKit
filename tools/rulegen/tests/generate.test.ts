@@ -67,16 +67,15 @@ IP-CIDR6,2001:db8::/32,no-resolve
     expect(qx).toBe(renderList(fixture(), "loon"));
   });
 
-  test("sing-box uses version 2 and one ordered OR predicate per enabled source rule", () => {
+  test("sing-box uses version 2 with OR destination fields in one default rule", () => {
     const output = renderSingBox(fixture());
     expect(JSON.parse(output)).toEqual({
       version: 2,
-      rules: [
-        { domain: ["api.example.com"] },
-        { domain_suffix: ["example.net"] },
-        { ip_cidr: ["192.0.2.0/24"] },
-        { ip_cidr: ["2001:db8::/32"] },
-      ],
+      rules: [{
+        domain: ["api.example.com"],
+        domain_suffix: ["example.net"],
+        ip_cidr: ["192.0.2.0/24", "2001:db8::/32"],
+      }],
     });
     // No leading dot: sing-box must match both example.net and its subdomains.
     expect(output).not.toContain('".example.net"');
@@ -84,6 +83,27 @@ IP-CIDR6,2001:db8::/32,no-resolve
     expect(output).not.toContain("2001:db9");
     expect(output).not.toContain("no_resolve");
     expect(output.endsWith("\n")).toBe(true);
+  });
+
+  test("sing-box combines interleaved groups while preserving each field's source order", () => {
+    const data = fixture();
+    data.groups[0].rules.unshift({ type: "ipv6-cidr", value: "2001:db7::/32", options: { no_resolve: true } });
+    data.groups[1].rules.splice(1, 0,
+      { type: "domain", value: "other.example.com" },
+      { type: "domain-suffix", value: "other.example.net" },
+    );
+    data.groups[1].rules.push({ type: "ipv4-cidr", value: "198.51.100.0/24", options: { no_resolve: true } });
+    expect(JSON.parse(renderSingBox(data)).rules).toEqual([{
+      domain: ["api.example.com", "other.example.com"],
+      domain_suffix: ["example.net", "other.example.net"],
+      ip_cidr: ["2001:db7::/32", "192.0.2.0/24", "2001:db8::/32", "198.51.100.0/24"],
+    }]);
+  });
+
+  test("sing-box omits empty domain fields for an IP-only set", () => {
+    const data = fixture();
+    data.groups = [data.groups[1]];
+    expect(JSON.parse(renderSingBox(data)).rules).toEqual([{ ip_cidr: ["192.0.2.0/24", "2001:db8::/32"] }]);
   });
 
   test("Loon resolution-enabled networks have no no-resolve token", () => {
@@ -142,7 +162,7 @@ describe("explicit handling of resolution semantics", () => {
     data.groups[1].rules.forEach(rule => { rule.enabled = false; });
     delete data.compatibility;
     expect(JSON.parse(renderSingBox(data)).rules).toEqual([
-      { domain: ["api.example.com"] }, { domain_suffix: ["example.net"] },
+      { domain: ["api.example.com"], domain_suffix: ["example.net"] },
     ]);
   });
 });

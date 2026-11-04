@@ -53,11 +53,16 @@ describe("all current sources and generated client artifacts", () => {
       }
       expect(renderList(data, "quantumultx").replaceAll("HOST-SUFFIX,", "DOMAIN-SUFFIX,").replaceAll("HOST,", "DOMAIN,")).toBe(renderList(data, "loon"));
     });
-    test(`${name}: sing-box JSON preserves every enabled predicate and source order`, () => {
+    test(`${name}: compact sing-box JSON preserves all enabled predicates and per-field order`, () => {
       const expected = data.groups.flatMap(group => group.rules).filter(rule => rule.enabled !== false);
       const json = JSON.parse(renderSingBox(data));
       expect(json.version).toBe(2);
-      expect(json.rules.map((rule: Record<string, string[]>) => Object.values(rule)[0][0])).toEqual(expected.map(rule => rule.value));
+      expect(json.rules).toHaveLength(1);
+      const rule = json.rules[0];
+      expect(Object.keys(rule).every(key => ["domain", "domain_suffix", "ip_cidr"].includes(key))).toBe(true);
+      expect(rule.domain ?? []).toEqual(expected.filter(rule => rule.type === "domain").map(rule => rule.value));
+      expect(rule.domain_suffix ?? []).toEqual(expected.filter(rule => rule.type === "domain-suffix").map(rule => rule.value));
+      expect(rule.ip_cidr ?? []).toEqual(expected.filter(rule => rule.type.endsWith("-cidr")).map(rule => rule.value));
       expect(readFileSync(join(root, "sing-box/rules", `${name}.json`), "utf8")).toBe(renderSingBox(data));
     });
   }

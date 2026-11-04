@@ -2,138 +2,36 @@
   "version": 2,
   "rules": [
     {
-      "domain_suffix": [
-        "bitkeep.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bitkeep.app"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bitkeep.asia"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bitkeep.biz"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bitkeep.fun"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bitkeep.life"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bitkeep.top"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bitkeep.vip"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bitapi.vip"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "wwmxd.fun"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "wwmxd.org"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "wwmxd.shop"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "chainnear.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "ljhsnzpc.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "lymryy.com"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "jjdsn.vip"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bgw.live"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bgw.world"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bwb.global"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "bwb.online"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "walletconnect.org"
-      ]
-    },
-    {
-      "domain_suffix": [
-        "web3modal.org"
-      ]
-    },
-    {
       "domain": [
-        "arb-mainnet.g.alchemy.com"
-      ]
-    },
-    {
-      "domain": [
-        "arb1.arbitrum.io"
-      ]
-    },
-    {
-      "domain": [
-        "cca-lite.coinbase.com"
-      ]
-    },
-    {
-      "domain": [
-        "app.fiat24.com"
-      ]
-    },
-    {
-      "domain": [
+        "arb-mainnet.g.alchemy.com",
+        "arb1.arbitrum.io",
+        "cca-lite.coinbase.com",
+        "app.fiat24.com",
         "polymarket-upload.s3.us-east-2.amazonaws.com"
+      ],
+      "domain_suffix": [
+        "bitkeep.com",
+        "bitkeep.app",
+        "bitkeep.asia",
+        "bitkeep.biz",
+        "bitkeep.fun",
+        "bitkeep.life",
+        "bitkeep.top",
+        "bitkeep.vip",
+        "bitapi.vip",
+        "wwmxd.fun",
+        "wwmxd.org",
+        "wwmxd.shop",
+        "chainnear.com",
+        "ljhsnzpc.com",
+        "lymryy.com",
+        "jjdsn.vip",
+        "bgw.live",
+        "bgw.world",
+        "bwb.global",
+        "bwb.online",
+        "walletconnect.org",
+        "web3modal.org"
       ]
     }
   ]

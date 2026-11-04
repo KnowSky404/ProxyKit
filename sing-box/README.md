@@ -2,7 +2,7 @@
 
 `rules/` 中的 `.json`（Source Rule Set）及 `.srs`（Binary Rule Set）由 `shared/rules/*.yaml` 生成。消费者最低 **sing-box 1.10.0**，使用规则集格式 **version 2**；仓库和 CI 固定官方 **1.14.4** 编译器以保证可重复构建。
 
-[1.14.4](https://github.com/SagerNet/sing-box/releases/tag/v1.14.4) 为 2026-11-03 核对的最新稳定版。已用该版本重新编译、解析和匹配验证全部规则；五组 SRS 字节与升级前一致。当前条件继续采用 version 2，消费者最低版本保持 1.10.0；[上游更高格式版本](https://sing-box.sagernet.org/configuration/rule-set/source-format/)新增的条件不在当前生成范围内。
+[1.14.4](https://github.com/SagerNet/sing-box/releases/tag/v1.14.4) 为 2026-11-03 核对的最新稳定版。已用该版本重新编译、解析和匹配验证全部规则。当前条件继续采用 version 2，消费者最低版本保持 1.10.0；[上游更高格式版本](https://sing-box.sagernet.org/configuration/rule-set/source-format/)新增的条件不在当前生成范围内。
 
 ## 已收录规则
 
@@ -14,6 +14,10 @@
 - [`rules/wise.json`](rules/wise.json) / [`rules/wise.srs`](rules/wise.srs): Wise App 分流规则。
 
 来源和候选项见对应 YAML；JSON/SRS 仅包含启用的匹配条件，不包含策略、注释或禁用条件。现阶段文件很小、更新频率低，因此将 SRS 和 JSON 一起提交，保持 `main/sing-box/rules/<name>.srs` 稳定 Raw URL；不引入 Release Assets 的更新与 URL 管理成本。
+
+每个 JSON 规则集使用一个普通规则对象，同类值分别汇总到 `domain`、`domain_suffix`、`ip_cidr` 数组，IPv4/IPv6 共用 `ip_cidr`，空字段省略；各数组保留源条件的相对顺序。这些目标地址条件按 OR 匹配。SRS 由同一 JSON 官方编译得到。
+
+**从旧版逐条对象更新时：**下方仅用 `rule_set` 绑定策略的示例保持相同目标匹配结果；若你的外层规则还写了域名/IP 条件，单普通对象集合会按[官方语义](https://sing-box.sagernet.org/configuration/route/rule/#default-fields)将字段并入外层地址组，可能改变原来的交集关系。需要交集时显式使用逻辑 AND，写法和迁移边界见[规则格式说明](../docs/rule-format.md#从逐条对象迁移到单对象)。JSON/SRS 的 Raw 路径保持不变。
 
 ## 引用示例
 
