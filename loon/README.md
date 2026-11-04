@@ -69,6 +69,7 @@ ipv6-vif = off
 - `rules/binance.list`: Binance App 分流规则，基于 iOS App 抓包整理。
 - `rules/bitget-wallet.list`: Bitget Wallet App 分流规则，基于 iOS App Loon 抓包整理。
 - `rules/bybit.list`: Bybit App 分流规则，基于 iOS App Loon 抓包整理。
+- [`rules/telegram.list`](rules/telegram.list): Telegram 官方服务域名及 IPv4/IPv6 网段，包含 Telegraph、Telescope 与 Desktop 更新；[范围和引用说明](../shared/README.md#telegram)。
 - `rules/ur.list`: UR App 分流规则，基于 iOS App Loon 抓包整理。
 - [`rules/wechat.list`](rules/wechat.list): 微信 / WeChat 分流规则，迁自手工维护的 sing-box 配置；保留共享腾讯端点及整个 `43.160.0.0/12` 网段，策略由订阅配置绑定。私网直连仍由主配置单独管理，迁移边界见 [WeChat 说明](../sing-box/README.md#wechat-迁移说明)。
 - `rules/wise.list`: Wise App 分流规则，基于 iOS App Loon 抓包整理。

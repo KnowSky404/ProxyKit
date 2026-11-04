@@ -43,6 +43,7 @@
 - Loon 分流规则放在 `loon/rules/`，域名规则使用 `DOMAIN`、`DOMAIN-SUFFIX` 等 Loon 语法。
 - Quantumult X 分流规则放在 `quantumultx/filters/`，对应域名规则使用 `HOST`、`HOST-SUFFIX` 等 Quantumult X 语法。
 - 两端文件应使用相同的基础文件名；转换语法时保持匹配目标、启用状态、顺序和语义一致。
+- IPv6 CIDR 的客户端关键字不同：Loon 使用 `IP-CIDR6`，Quantumult X 使用 `IP6-CIDR`；共享 YAML 使用 `ipv6-cidr`，sing-box 映射到 `ip_cidr`。跨端文本等价检查必须归一化这组关键字，并保留 IPv6 回归覆盖，不能因关键字不同而判定生成器输出错误。
 - sing-box 生成规则放在 `sing-box/rules/`，包括 Source JSON 和官方 CLI 编译的 SRS。新增、重命名或删除规则文件时，同步更新 `loon/README.md`、`quantumultx/README.md`、`sing-box/README.md` 以及其他受影响的索引文档。
 
 ## 统一规则生成器约束

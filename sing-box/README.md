@@ -9,6 +9,7 @@
 - [`rules/binance.json`](rules/binance.json) / [`rules/binance.srs`](rules/binance.srs): Binance App 分流规则。
 - [`rules/bitget-wallet.json`](rules/bitget-wallet.json) / [`rules/bitget-wallet.srs`](rules/bitget-wallet.srs): Bitget Wallet App 分流规则。
 - [`rules/bybit.json`](rules/bybit.json) / [`rules/bybit.srs`](rules/bybit.srs): Bybit App 分流规则。
+- [`rules/telegram.json`](rules/telegram.json) / [`rules/telegram.srs`](rules/telegram.srs): Telegram 官方服务域名及 IPv4/IPv6 网段；主配置须遵守不预解析约束，[范围和引用说明](../shared/README.md#telegram)。
 - [`rules/ur.json`](rules/ur.json) / [`rules/ur.srs`](rules/ur.srs): UR App 分流规则。
 - [`rules/wechat.json`](rules/wechat.json) / [`rules/wechat.srs`](rules/wechat.srs): 微信 / WeChat 分流规则，迁自手工维护的 sing-box 配置；保留共享腾讯端点和整个 `43.160.0.0/12` 网段，具体迁移边界见下文。
 - [`rules/wise.json`](rules/wise.json) / [`rules/wise.srs`](rules/wise.srs): Wise App 分流规则。
@@ -43,7 +44,7 @@
 
 此片段采用 sing-box 1.14.4 的显式 `action: "route"` 写法，需要 1.11.0 及以上；1.10.x 消费者应省略 `action` 字段，规则集本身仍兼容。升级已有主配置时参照[官方迁移指南](https://sing-box.sagernet.org/migration/)。使用 Source JSON 时将 `format` 改为 `source` 并改用 `.json` URL。[官方 Rule Set 文档](https://sing-box.sagernet.org/configuration/rule-set/) 说明加载方式。
 
-**Binance 和 WeChat 的 IP 规则带有 Loon `no-resolve` 语义。** sing-box headless 规则不能携带这一开关；引用这些集合时，主配置不得在此前通过 `action: "resolve"` 等操作预先将域名转成 IP（旧版配置也应检查 inbound domain strategy）。不要启用按源 IP 匹配这些规则集，也不要把包含 IP 条件的集合直接当成等价 DNS 规则。此约束保存在源文件显式兼容声明中，不能用一份规则集覆盖所有主配置的解析语义。详见 [规则格式与语义限制](../docs/rule-format.md)。
+**Binance、WeChat 和 Telegram 的 IP 规则带有 Loon `no-resolve` 语义。** sing-box headless 规则不能携带这一开关；引用这些集合时，主配置不得在此前通过 `action: "resolve"` 等操作预先将域名转成 IP（旧版配置也应检查 inbound domain strategy）。不要启用按源 IP 匹配这些规则集，也不要把包含 IP 条件的集合直接当成等价 DNS 规则。此约束保存在源文件显式兼容声明中，不能用一份规则集覆盖所有主配置的解析语义。详见 [规则格式与语义限制](../docs/rule-format.md)。
 
 ## WeChat 迁移说明
 
