@@ -59,6 +59,8 @@ bun tools/rulegen/src/cli.ts build --target loon,quantumultx --output /tmp/proxy
 
 每个 sing-box 集合将全部启用条件汇总到一个普通对象的 `domain`、`domain_suffix` 和 `ip_cidr` 数组，省略空字段，并保留各数组内的源顺序。继续使用 Source Rule Set version 2；聚合不会提高消费者最低版本。官方反编译可能合并相邻或重叠 CIDR，校验按地址族比较地址并集。旧版逐条对象到单对象的外层条件组合变化及显式逻辑 AND 写法，见[规则格式与迁移边界](../../docs/rule-format.md#从逐条对象迁移到单对象)。
 
+条件可用 `targets` 显式限定客户端；省略则仍适用三端。User-Agent / ASN 仅能生成 Loon / QX 文本，sing-box 必须显式排除，否则校验失败；不会在线展开 ASN。WeChat 当前按要求只给 Loon 添加这三条，其他目标保留原匹配范围，详见[客户端差异](../../sing-box/README.md#wechat-上游对照与客户端差异)。
+
 ## 校验和维护
 
 [格式文档](../../docs/rule-format.md) 定义 Schema v1。未知字段、类型错误、非法域名、CIDR、重复条件、冲突选项及无启用规则的规则集均拒绝。诊断只应定位结构位置，不输出域名、IP、YAML 内容或编译器可能包含输入数据的原始错误。生成器不读取远程规则，不解析节点订阅，不修改公共或私人远程仓库。

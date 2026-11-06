@@ -3,9 +3,10 @@ import { readFileSync, readdirSync, mkdtempSync, writeFileSync, rmSync } from "n
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadRules, ipNumber } from "../src/model.ts";
+import { appliesTo, loadRules, ipNumber } from "../src/model.ts";
 import { renderList, renderSingBox } from "../src/generate.ts";
 import { checkCompiler, compileSrs } from "../src/srs.ts";
+import { parseListArtifact, verifyArtifact } from "../src/verify.ts";
 
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const fixtures = new URL("./fixtures/legacy/", import.meta.url);
@@ -51,10 +52,13 @@ describe("all current sources and generated client artifacts", () => {
         const path = target === "loon" ? "loon/rules" : "quantumultx/filters";
         expect(readFileSync(join(root, path, `${name}.list`), "utf8")).toBe(renderList(data, target));
       }
-      expect(renderList(data, "quantumultx").replaceAll("HOST-SUFFIX,", "DOMAIN-SUFFIX,").replaceAll("HOST,", "DOMAIN,").replaceAll("IP6-CIDR,", "IP-CIDR6,")).toBe(renderList(data, "loon"));
+      for (const target of ["loon", "quantumultx"] as const) verifyArtifact(renderList(data, target), target, data);
+      if (data.groups.every(group => group.rules.every(rule => !rule.targets))) {
+        expect(renderList(data, "quantumultx").replaceAll("HOST-SUFFIX,", "DOMAIN-SUFFIX,").replaceAll("HOST,", "DOMAIN,").replaceAll("IP6-CIDR,", "IP-CIDR6,")).toBe(renderList(data, "loon"));
+      }
     });
     test(`${name}: compact sing-box JSON preserves all enabled predicates and per-field order`, () => {
-      const expected = data.groups.flatMap(group => group.rules).filter(rule => rule.enabled !== false);
+      const expected = data.groups.flatMap(group => group.rules).filter(rule => rule.enabled !== false && appliesTo(rule, "sing-box"));
       const json = JSON.parse(renderSingBox(data));
       expect(json.version).toBe(2);
       expect(json.rules).toHaveLength(1);
@@ -76,7 +80,7 @@ describe("real official SRS matching and reproducibility", () => {
       const source = renderSingBox(data);
       expect(compileSrs(source, compiler)).toEqual(readFileSync(binary));
       expect(compileSrs(source, compiler)).toEqual(readFileSync(binary));
-      for (const rule of data.groups.flatMap(group => group.rules).filter(rule => rule.enabled !== false)) {
+      for (const rule of data.groups.flatMap(group => group.rules).filter(rule => rule.enabled !== false && appliesTo(rule, "sing-box"))) {
         const probe = rule.value.split("/")[0];
         expect(match(binary, probe)).toBe(true);
         if (rule.type === "domain-suffix") {
@@ -110,4 +114,22 @@ describe("real official SRS matching and reproducibility", () => {
       expect(ipNumber("2001:db8::")).toBe(ipNumber("2001:0db8:0:0:0:0:0:0"));
     } finally { rmSync(directory, { recursive: true, force: true }); }
   });
+});
+
+test("WeChat adds exactly the upstream User-Agent and ASN predicates to Loon while preserving QX/sing-box scope", () => {
+  const data = sets.find(set => set.name === "wechat")!.data;
+  const loon = parseListArtifact(renderList(data, "loon"), "loon");
+  const qx = parseListArtifact(renderList(data, "quantumultx"), "quantumultx", data.compatibility);
+  expect(loon.slice(-3)).toEqual([
+    { type: "user-agent", value: "MicroMessenger*" },
+    { type: "user-agent", value: "WeChat*" },
+    { type: "ip-asn", value: "132203", options: { no_resolve: true } },
+  ]);
+  expect(loon).toHaveLength(34);
+  expect(qx).toHaveLength(31);
+  expect(loon.slice(0, -3)).toEqual(qx);
+  const oldJson = JSON.parse(renderSingBox(data)).rules[0];
+  expect(oldJson.domain).toHaveLength(8);
+  expect(oldJson.domain_suffix).toHaveLength(22);
+  expect(oldJson.ip_cidr).toEqual(["43.160.0.0/12"]);
 });

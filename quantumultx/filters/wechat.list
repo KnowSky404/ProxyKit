@@ -1,8 +1,8 @@
 # NAME: WeChat
 # AUTHOR: KnowSky404
-# UPDATED: 2026-11-03
-# SOURCE: Manually maintained sing-box route rule: https://microbin.knowsky.uk/raw/bqWQ3e
-# NOTE: Preserves all 31 supplied domain/IP predicates, including shared Tencent endpoints and the full IP range. Private-IP routing and the Direct outbound remain in consumer configuration.
+# UPDATED: 2026-11-06
+# SOURCE: Original: https://microbin.knowsky.uk/raw/bqWQ3e; blackmatrix7 WeChat: https://github.com/blackmatrix7/ios_rule_script/blob/0fa60782abfe70f58da510e90d9086136cf0d855/rule/Loon/WeChat/WeChat.list
+# NOTE: All clients retain the original 31 domain/IP predicates. Loon additionally uses two User-Agent patterns and AS132203 from blackmatrix7; QX/sing-box retain the original scope. Private-IP routing and policy remain in consumer configuration.
 
 # Original IP range
 # The full supplied range is retained; it is not exclusive to WeChat.
@@ -44,3 +44,14 @@ HOST-SUFFIX,wx.qq.com
 HOST-SUFFIX,wxapp.tc.qq.com
 HOST-SUFFIX,wxs.qq.com
 HOST-SUFFIX,yun-hl.3g.qq.com
+
+# Loon additions from blackmatrix7
+# Checked 2026-11-06: all 8 exact domains and 22 suffixes already match upstream, in order.
+# Upstream author: blackmatrix7; license: GPL-2.0, https://github.com/blackmatrix7/ios_rule_script/blob/0fa60782abfe70f58da510e90d9086136cf0d855/LICENSE
+# These additions are intentionally Loon-only; QX retains the original scope by request, not because it lacks these rule types.
+# sing-box Source Rule Set v2 has no User-Agent or ASN predicates; no dynamic ASN-to-CIDR expansion is performed.
+# User-Agent matches visible HTTP request headers, not all traffic from the app.
+# AS132203 is a shared Tencent network, not WeChat-exclusive; it is not equivalent to 43.160.0.0/12.
+# Not emitted for quantumultx: user-agent; targets=loon.
+# Not emitted for quantumultx: user-agent; targets=loon.
+# Not emitted for quantumultx: ip-asn; targets=loon.

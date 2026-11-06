@@ -11,7 +11,7 @@
 - [`rules/bybit.json`](rules/bybit.json) / [`rules/bybit.srs`](rules/bybit.srs): Bybit App 分流规则。
 - [`rules/telegram.json`](rules/telegram.json) / [`rules/telegram.srs`](rules/telegram.srs): Telegram 官方服务域名及 IPv4/IPv6 网段；主配置须遵守不预解析约束，[范围和引用说明](../shared/README.md#telegram)。
 - [`rules/ur.json`](rules/ur.json) / [`rules/ur.srs`](rules/ur.srs): UR App 分流规则。
-- [`rules/wechat.json`](rules/wechat.json) / [`rules/wechat.srs`](rules/wechat.srs): 微信 / WeChat 分流规则，迁自手工维护的 sing-box 配置；保留共享腾讯端点和整个 `43.160.0.0/12` 网段，具体迁移边界见下文。
+- [`rules/wechat.json`](rules/wechat.json) / [`rules/wechat.srs`](rules/wechat.srs): 微信 / WeChat 分流规则，迁自手工维护的 sing-box 配置；保留共享腾讯端点和整个 `43.160.0.0/12` 网段，具体迁移边界见下文；[上游对照与客户端差异](#wechat-上游对照与客户端差异)。
 - [`rules/wise.json`](rules/wise.json) / [`rules/wise.srs`](rules/wise.srs): Wise App 分流规则。
 
 来源和候选项见对应 YAML；JSON/SRS 仅包含启用的匹配条件，不包含策略、注释或禁用条件。现阶段文件很小、更新频率低，因此将 SRS 和 JSON 一起提交，保持 `main/sing-box/rules/<name>.srs` 稳定 Raw URL；不引入 Release Assets 的更新与 URL 管理成本。
@@ -76,3 +76,19 @@
 原始片段未编码 `no-resolve`。本次为三端生成采用仓库现有的不预解析约束：YAML 中 CIDR 显式使用 `no_resolve: true`，并声明 QX 兼容策略字段及 sing-box 外部解析前提。**匹配集合保留，不承诺与任意原主配置的 DNS 行为完全相同**；请按上述约束检查已有主配置。Loon/QX 使用各自主配置管理私网直连。
 
 构建、编译与校验命令见 [rulegen](../tools/rulegen/README.md)；不得手工修改 JSON 或自行编码 SRS。
+
+## WeChat 上游对照与客户端差异
+
+2026-11-06 对照 blackmatrix7 的 [WeChat.list（固定提交 0fa6078）](https://github.com/blackmatrix7/ios_rule_script/blob/0fa60782abfe70f58da510e90d9086136cf0d855/rule/Loon/WeChat/WeChat.list)，8 条精确域名和 22 条域名后缀逐项及顺序均相同，没有遗漏域名。上游项目许可为 [GPL-2.0](https://github.com/blackmatrix7/ios_rule_script/blob/0fa60782abfe70f58da510e90d9086136cf0d855/LICENSE)，作者及来源保存在共享 YAML 和生成列表中。
+
+| 条件 | Loon | Quantumult X | sing-box |
+| --- | --- | --- | --- |
+| 原有 8 条精确域名、22 条后缀、`43.160.0.0/12` | 保留 | 保留 | 保留 |
+| `USER-AGENT,MicroMessenger*` / `USER-AGENT,WeChat*` | 新增启用 | 按本次要求不引入 | 无对应 headless 字段，不引入 |
+| `IP-ASN,132203,no-resolve` | 新增启用 | 按本次要求不引入 | 无对应 headless 字段，不展开 CIDR |
+
+Loon 共 34 条启用条件；QX / sing-box 保持 31 条。QX 实际支持 User-Agent 和 ASN，未引入是本次限定 Loon 的选择，不能解释为客户端缺少能力。源条件通过 `targets: [loon]` 显式限定，其他文本目标输出排除说明，避免误称三端匹配集合完全相同。语法依据与字段约束见[规则格式](../docs/rule-format.md#目标格式)。
+
+User-Agent 仅对可见的 HTTP 请求头生效，不是微信全部流量的进程识别。[AS132203 注册为腾讯网络](https://rdap.apnic.net/autnum/132203)，并非微信独占，加入后共享该 ASN 的其他业务也可能采用微信策略；实际范围依赖 Loon 的 ASN 数据库。它与原有 `43.160.0.0/12` 不能视为等价，也不替换原 CIDR。ASN 的 `no-resolve` 沿用 Loon 目标已为 IP 才匹配的语义。
+
+自动化验证覆盖目标限定、生成语法、顺序、排除项和原有域名/CIDR 回归；没有模拟 HTTP 头可见性或 ASN 数据库。Loon 真机导入、User-Agent 与 ASN 实际命中仍需按[客户端验证清单](../docs/client-verification.md)确认。

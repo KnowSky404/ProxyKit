@@ -30,7 +30,7 @@
 
 | 能力 | 自动化证据 | 明确边界 |
 | --- | --- | --- |
-| 独立产物解析 | `src/verify.ts`、`tests/verify.test.ts` | 独立于渲染器的类型映射；复用严格输入校验器校验值。只接受本项目四类生成语法，不是通用 Loon/QX 配置解析器。 |
+| 独立产物解析 | `src/verify.ts`、`tests/verify.test.ts` | 独立于渲染器的类型映射；复用严格输入校验器校验值。只接受本项目生成子集（现含 User-Agent / ASN 文本语法），不是通用 Loon/QX 配置解析器。 |
 | 正反匹配与误匹配回归 | `fixtures/matches.json`、`verify.test.ts` | 手写期望覆盖五组；通用案例覆盖根域、多级子域、后缀边界、精确域名子域反例、IPv4/IPv6 网络边界和禁用项。比较共同支持的目标集合，不执行 DNS。 |
 | 典型错误样本 | `verify.test.ts`、既有 `model.test.ts`/`cli.test.ts` | 错关键字/字段/地址、启用状态改变、顺序漂移、未知 JSON 条件、重复条件及非法官方输入会失败；不通过增加同义快照替代语义测试。 |
 | QX 远程引用 | `verifyQxRemoteEntry` 与 README 示例回归 | 有限检查 `filter_remote` URL、tag、enabled、force-policy；实际策略存在性与覆盖效果需要真机确认。历史 no-resolve 仍是第三字段策略 token。 |
@@ -39,6 +39,8 @@
 | 回归与 CI | `rules:verify`、`build-rules.yml` | 保留全部既有测试；临时构建/检查和提交产物检查仍执行，工具版本/下载哈希/依赖锁定不变。 |
 
 静态后缀匹配按标签边界；IP 通过数字网段比较，且不将 IPv4 与 IPv6 地址族视为同一条件。运行时测试为不同 outbound 配置可区分的 IPv4 loopback HTTP 代理响应端，收到隧道请求后仅在本地响应，不连接模拟目标。因此能验证 IPv6 目标元数据匹配，却不声称验证 IPv6 网络连通性。官方 `rule-set match` 的 IPv6 网络边界仍由既有迁移测试验证。
+
+2026-11-06 WeChat 增加三条 `targets: [loon]` 的 User-Agent / ASN 条件。独立解析逐目标核对规则和顺序；共同域名/CIDR 继续执行原回归，Loon 补充另断言两条头模式与 ASN/选项。`matchesRules` 遇到启用的 User-Agent / ASN 会拒绝执行地址探测；地址回归显式只传域名/CIDR 子集，不能把子集的阴性结果称为完整 Loon 匹配结果。HTTP 头可见性和客户端 ASN 数据库仍须真机验证。
 
 ## sing-box 聚合输出回归
 
@@ -78,7 +80,7 @@ bun run rules:verify
 
 该脚本依次复用 `typecheck`、完整 `bun test` 和 CLI `verify`。Bun 原生报告测试通过/失败数，CLI 复用已有 validate/check 路径（含真实 SRS compile/decompile），独立解析已有产物并输出质量诊断与计数。不会隐式 build 或修复漂移；需要更新产物时先执行 `bun run rules:build`，再验证。原有 `rules:validate`、`rules:build`、`rules:check` 均保留。
 
-CLI 末尾 JSON 包含 `ruleSets`、四类规则数量（含候选）、`enabled`、`disabled`、`artifacts`、`error`、`warning`、`info`。每条诊断包含 severity/code/locations/relation/message；source/group/rule 均为零基数组位置，source 顺序与输入目录中排序后的 YAML 一致。解析/Schema/漂移/官方编译错误返回非零；Warning/Info 供人工判断，不使正常包含或共享服务成为错误。
+CLI 末尾 JSON 包含 `ruleSets`、各类规则数量（含候选及限定客户端的条件）、`enabled`、`disabled`、`artifacts`、`error`、`warning`、`info`。这些是源条件计数，不是每个客户端的启用数量。每条诊断包含 severity/code/locations/relation/message；source/group/rule 均为零基数组位置，source 顺序与输入目录中排序后的 YAML 一致。解析/Schema/漂移/官方编译错误返回非零；Warning/Info 供人工判断，不使正常包含或共享服务成为错误。
 
 - **Error**：违反既有 Schema/项目约束，例如同集重复、冲突解析选项或无效输入。优先复用原校验器拒绝，不增加另一套宽松校验。
 - **Warning**：跨集重复/覆盖或可能扩展启用集合的候选；跨集相交 CIDR 的解析选项不同也需检查配置顺序。

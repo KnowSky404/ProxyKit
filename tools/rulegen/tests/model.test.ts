@@ -111,6 +111,49 @@ describe("domain validation", () => {
   }
 });
 
+describe("client-scoped User-Agent and ASN predicates", () => {
+  test("preserves explicit targets, wildcard case and IP options", () => {
+    const data = source([
+      { type: "user-agent", value: "MicroMessenger*", targets: ["loon"] },
+      { type: "ip-asn", value: "4294967295", targets: ["loon"], options: { no_resolve: true } },
+    ]);
+    expect(parseRuleSet(stringify(data))).toEqual(data);
+  });
+  for (const value of ["0", "01", "AS132203", "-1", "1.5", "4294967296", " 132203", "132203,no-resolve"]) {
+    test(`rejects noncanonical ASN ${JSON.stringify(value)}`, () => {
+      expect(() => validateRuleSet(source([{ type: "ip-asn", value }]))).toThrow(RuleValidationError);
+    });
+  }
+  for (const value of ["MicroMessenger*,DIRECT", " Agent*", "Agent* ", "Agent\n*", "微信*"]) {
+    test(`rejects unsafe User-Agent ${JSON.stringify(value)}`, () => {
+      expect(() => validateRuleSet(source([{ type: "user-agent", value }]))).toThrow(RuleValidationError);
+    });
+  }
+  test("rejects empty, duplicate, unknown and non-array targets", () => {
+    for (const targets of [[], ["loon", "loon"], ["unknown"], "loon", null, [1]]) {
+      const data: any = source();
+      data.groups[0].rules[0].targets = targets;
+      expect(() => validateRuleSet(data)).toThrow("targets");
+    }
+  });
+  test("new match types retain duplicate and option validation", () => {
+    for (const type of ["user-agent", "ip-asn"] as const) {
+      const value = type === "user-agent" ? "Agent*" : "132203";
+      expect(() => validateRuleSet(source([{ type, value }, { type, value, enabled: false }]))).toThrow("duplicate match");
+    }
+    expect(() => validateRuleSet(source([{ type: "user-agent", value: "Agent*", options: { no_resolve: true } }]))).toThrow("IP options");
+  });
+  test("CIDR resolution conflicts apply only when the client scopes overlap", () => {
+    const rules: Rule[] = [
+      { type: "ipv4-cidr", value: "192.0.2.0/24", targets: ["loon"], options: { no_resolve: true } },
+      { type: "ipv4-cidr", value: "192.0.2.1/32", targets: ["quantumultx"] },
+    ];
+    expect(() => validateRuleSet(source(rules))).not.toThrow();
+    rules[1].targets = ["loon", "quantumultx"];
+    expect(() => validateRuleSet(source(rules))).toThrow("conflicting resolution options");
+  });
+});
+
 describe("CIDR validation and duplicate matching", () => {
   const valid: [Rule["type"], string][] = [
     ["ipv4-cidr", "0.0.0.0/0"], ["ipv4-cidr", "192.0.2.0/24"], ["ipv4-cidr", "192.0.2.1/32"],

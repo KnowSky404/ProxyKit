@@ -71,5 +71,5 @@ ipv6-vif = off
 - `rules/bybit.list`: Bybit App 分流规则，基于 iOS App Loon 抓包整理。
 - [`rules/telegram.list`](rules/telegram.list): Telegram 官方服务域名及 IPv4/IPv6 网段，包含 Telegraph、Telescope 与 Desktop 更新；[范围和引用说明](../shared/README.md#telegram)。
 - `rules/ur.list`: UR App 分流规则，基于 iOS App Loon 抓包整理。
-- [`rules/wechat.list`](rules/wechat.list): 微信 / WeChat 分流规则，迁自手工维护的 sing-box 配置；保留共享腾讯端点及整个 `43.160.0.0/12` 网段，策略由订阅配置绑定。私网直连仍由主配置单独管理，迁移边界见 [WeChat 说明](../sing-box/README.md#wechat-迁移说明)。
+- [`rules/wechat.list`](rules/wechat.list): 微信 / WeChat 分流规则，保留原有域名和 `43.160.0.0/12`，并参考 blackmatrix7 补充两条 User-Agent 和 `AS132203`，共 34 条；ASN 非微信独占。策略及私网直连由主配置管理，[迁移说明](../sing-box/README.md#wechat-迁移说明)与[上游对照及客户端差异](../sing-box/README.md#wechat-上游对照与客户端差异)。
 - `rules/wise.list`: Wise App 分流规则，基于 iOS App Loon 抓包整理。

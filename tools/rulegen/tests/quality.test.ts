@@ -13,6 +13,28 @@ const domain = (value: string, suffix = false, enabled = true): Rule => ({ type:
 const cidr = (value: string, no_resolve = true, enabled = true): Rule => ({ type: value.includes(":") ? "ipv6-cidr" : "ipv4-cidr", value, options: { no_resolve }, enabled });
 
 describe("rule quality relationships", () => {
+  test("a covered candidate is informational only when its entire client scope is covered", () => {
+    const active: Rule = { type: "domain-suffix", value: "example.com", targets: ["loon"] };
+    const candidate: Rule = { type: "domain", value: "api.example.com", enabled: false, targets: ["loon", "quantumultx"] };
+    for (const rules of [[active, candidate], [candidate, active]]) {
+      expect(analyzeQuality([source(rules)])[0].severity).toBe("warning");
+    }
+    candidate.targets = ["loon"];
+    expect(analyzeQuality([source([active, candidate])])[0].severity).toBe("info");
+    expect(analyzeQuality([source([candidate, active])])[0].severity).toBe("info");
+  });
+  test("client scopes and non-address types do not create false domain or CIDR relationships", () => {
+    const data = source([
+      { type: "domain-suffix", value: "example.com", targets: ["loon"] },
+      { type: "domain", value: "api.example.com", targets: ["quantumultx"] },
+      { type: "user-agent", value: "Agent.example.com", targets: ["loon"] },
+      { ...cidr("192.0.2.0/24"), targets: ["loon"] },
+      { ...cidr("192.0.2.1/32", false), targets: ["quantumultx"] },
+      { type: "ip-asn", value: "132203", targets: ["loon"] },
+    ]);
+    expect(analyzeQuality([data])).toEqual([]);
+    expect(analyzeQuality([source([{ type: "ip-asn", value: "132203", targets: ["loon"] }]), source([{ type: "ip-asn", value: "132203" }])])[0].code).toBe("exact-duplicate");
+  });
   test("same-set domain coverage is informational, in either order and across groups", () => {
     const data = source([domain("wise.com", true)]);
     data.groups.push({ name: "Observed endpoints", rules: [domain("api.wise.com"), domain("nested.api.wise.com", true)] });
