@@ -3,14 +3,20 @@ import { readdir, readFile, lstat } from "node:fs/promises";
 import { isIP } from "node:net";
 import { join } from "node:path";
 
-export type RuleType = "domain" | "domain-suffix" | "ipv4-cidr" | "ipv6-cidr";
+export type Target = "loon" | "quantumultx" | "sing-box";
+export type RuleType = "domain" | "domain-suffix" | "ipv4-cidr" | "ipv6-cidr" | "user-agent" | "ip-asn";
 export type Rule = {
   type: RuleType;
   value: string;
   enabled?: boolean;
+  targets?: Target[];
   comments?: string[];
   options?: { no_resolve?: boolean };
 };
+
+export function appliesTo(rule: Rule, target: Target): boolean {
+  return rule.targets === undefined || rule.targets.includes(target);
+}
 export type RuleSet = {
   version: 1;
   metadata: { name: string; author: string; updated: string; source: string; note: string };
@@ -99,7 +105,7 @@ export function validateRuleSet(value: unknown): RuleSet {
   }
   if (!Array.isArray(root.groups) || !root.groups.length) fail("groups", "expected nonempty array");
   const seen = new Set<string>();
-  const networks: (Network & { resolve: boolean })[] = [];
+  const networks: (Network & { resolve: boolean; rule: Rule })[] = [];
   let active = 0;
   root.groups.forEach((entry, g) => {
     const gp = `groups[${g}]`;
@@ -109,17 +115,21 @@ export function validateRuleSet(value: unknown): RuleSet {
     if (!Array.isArray(group.rules) || !group.rules.length) fail(`${gp}.rules`, "expected nonempty array");
     group.rules.forEach((entry, r) => {
       const rp = `${gp}.rules[${r}]`;
-      const rule = object(entry, rp, ["type", "value", "enabled", "comments", "options"]);
-      if (!["domain", "domain-suffix", "ipv4-cidr", "ipv6-cidr"].includes(rule.type as string)) fail(`${rp}.type`, "unsupported rule type");
+      const rule = object(entry, rp, ["type", "value", "enabled", "targets", "comments", "options"]);
+      if (!["domain", "domain-suffix", "ipv4-cidr", "ipv6-cidr", "user-agent", "ip-asn"].includes(rule.type as string)) fail(`${rp}.type`, "unsupported rule type");
       text(rule.value, `${rp}.value`);
       if (rule.enabled !== undefined && typeof rule.enabled !== "boolean") fail(`${rp}.enabled`, "expected boolean");
+      if (rule.targets !== undefined && (!Array.isArray(rule.targets) || !rule.targets.length ||
+        rule.targets.some(target => !["loon", "quantumultx", "sing-box"].includes(target)) || new Set(rule.targets).size !== rule.targets.length)) {
+        fail(`${rp}.targets`, "expected distinct supported clients in a nonempty array");
+      }
       comments(rule.comments, `${rp}.comments`);
       const isCidr = (rule.type as string).endsWith("-cidr");
       let noResolve = false;
       if (rule.options !== undefined) {
         const opts = object(rule.options, `${rp}.options`, ["no_resolve"]);
         if (opts.no_resolve !== undefined && typeof opts.no_resolve !== "boolean") fail(`${rp}.options.no_resolve`, "expected boolean");
-        if (!isCidr) fail(`${rp}.options`, "IP options require CIDR rule");
+        if (!isCidr && rule.type !== "ip-asn") fail(`${rp}.options`, "IP options require CIDR or ASN rule");
         noResolve = opts.no_resolve === true;
       }
       let key = `${rule.type}:${rule.value}`;
@@ -128,13 +138,18 @@ export function validateRuleSet(value: unknown): RuleSet {
         key = `${rule.type}:${network.address}/${network.prefix}`;
         if (rule.enabled !== false) {
           for (const other of networks) {
+            if (!["loon", "quantumultx", "sing-box"].some(target => appliesTo(rule as Rule, target as Target) && appliesTo(other.rule, target as Target))) continue;
             const shift = BigInt(network.bits - Math.min(network.prefix, other.prefix));
             if (network.bits === other.bits && network.address >> shift === other.address >> shift && other.resolve !== noResolve) {
               fail(rp, "overlapping CIDRs have conflicting resolution options");
             }
           }
-          networks.push({ ...network, resolve: noResolve });
+          networks.push({ ...network, resolve: noResolve, rule: rule as Rule });
         }
+      } else if (rule.type === "ip-asn") {
+        if (!/^[1-9]\d*$/.test(rule.value) || Number(rule.value) > 4294967295) fail(`${rp}.value`, "expected canonical ASN in 1..4294967295");
+      } else if (rule.type === "user-agent") {
+        if (!/^[\x21-\x2b\x2d-\x7e]+$/.test(rule.value)) fail(`${rp}.value`, "expected printable ASCII pattern without whitespace or commas");
       } else domain(rule.value, `${rp}.value`);
       if (seen.has(key)) fail(rp, "duplicate match (including disabled candidates)");
       seen.add(key);

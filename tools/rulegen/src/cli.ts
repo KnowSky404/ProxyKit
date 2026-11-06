@@ -180,7 +180,7 @@ export async function runCli(args: string[]): Promise<void> {
         counts[diagnostic.severity]++;
         console.log(JSON.stringify(diagnostic));
       }
-      const types = { domain: 0, "domain-suffix": 0, "ipv4-cidr": 0, "ipv6-cidr": 0 };
+      const types = { domain: 0, "domain-suffix": 0, "ipv4-cidr": 0, "ipv6-cidr": 0, "user-agent": 0, "ip-asn": 0 };
       let enabled = 0;
       let disabled = 0;
       for (const { data } of sets) for (const group of data.groups) for (const rule of group.rules) {

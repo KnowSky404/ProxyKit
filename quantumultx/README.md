@@ -31,5 +31,5 @@ https://raw.githubusercontent.com/KnowSky404/ProxyKit/main/quantumultx/filters/w
 - `filters/bybit.list`: Bybit App 分流规则，基于 iOS App Loon 抓包整理。
 - [`filters/telegram.list`](filters/telegram.list): Telegram 官方服务域名及 IPv4/IPv6 网段，需用 `force-policy` 绑定策略；[范围和引用说明](../shared/README.md#telegram)。
 - `filters/ur.list`: UR App 分流规则，基于 iOS App Loon 抓包整理。
-- [`filters/wechat.list`](filters/wechat.list): 微信 / WeChat 分流规则，迁自手工维护的 sing-box 配置；保留共享腾讯端点及整个 `43.160.0.0/12` 网段，需使用 `force-policy` 绑定策略。私网直连仍由主配置单独管理，迁移边界见 [WeChat 说明](../sing-box/README.md#wechat-迁移说明)。
+- [`filters/wechat.list`](filters/wechat.list): 微信 / WeChat 分流规则，保留原有 31 条域名/IP 条件及整个 `43.160.0.0/12` 网段，需使用 `force-policy` 绑定策略。此次 User-Agent / ASN 仅为 Loon 补充，QX 按要求保留原范围；[上游对照及客户端差异](../sing-box/README.md#wechat-上游对照与客户端差异)。私网直连仍由主配置单独管理，[迁移说明](../sing-box/README.md#wechat-迁移说明)。
 - `filters/wise.list`: Wise App 分流规则，基于 iOS App Loon 抓包整理。

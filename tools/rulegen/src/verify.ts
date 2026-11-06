@@ -1,5 +1,5 @@
 import { isIP } from "node:net";
-import { ipNumber, RuleValidationError, validateRuleSet, type Rule, type RuleSet } from "./model.ts";
+import { appliesTo, ipNumber, RuleValidationError, validateRuleSet, type Rule, type RuleSet } from "./model.ts";
 
 export type ArtifactTarget = "loon" | "quantumultx" | "sing-box";
 
@@ -48,9 +48,11 @@ export function parseListArtifact(text: string, target: "loon" | "quantumultx", 
       case "IP-CIDR": type = "ipv4-cidr"; break;
       case "IP-CIDR6": if (target !== "loon") fail(location, "unsupported rule type"); type = "ipv6-cidr"; break;
       case "IP6-CIDR": if (target !== "quantumultx") fail(location, "unsupported rule type"); type = "ipv6-cidr"; break;
+      case "USER-AGENT": type = "user-agent"; break;
+      case "IP-ASN": type = "ip-asn"; break;
       default: fail(location, "unsupported rule type");
     }
-    if (third !== undefined && (!type.endsWith("-cidr") || third !== "no-resolve")) fail(location, "unsupported third field");
+    if (third !== undefined && ((!type.endsWith("-cidr") && type !== "ip-asn") || third !== "no-resolve")) fail(location, "unsupported third field");
     if (target === "quantumultx" && third && compatibility?.quantumultx_no_resolve !== "legacy-policy-token") {
       fail(location, "legacy policy token requires explicit compatibility and filter_remote force-policy");
     }
@@ -99,7 +101,7 @@ function singBoxFieldOrder(rules: Rule[]): Rule[] {
 /** Compare active predicates and per-field order; check handles exact layout/comments/candidates. */
 export function verifyArtifact(text: string, target: ArtifactTarget, expected: RuleSet): { total: number; enabled: number } {
   const actual = target === "sing-box" ? singBoxFieldOrder(parseSingBoxArtifact(text)) : parseListArtifact(text, target, expected.compatibility);
-  const enabled = expected.groups.flatMap(group => group.rules).filter(rule => rule.enabled !== false);
+  const enabled = expected.groups.flatMap(group => group.rules).filter(rule => rule.enabled !== false && appliesTo(rule, target));
   const source = target === "sing-box" ? singBoxFieldOrder(enabled) : enabled;
   if (actual.length !== source.length) fail(target, "predicate count differs from source");
   actual.forEach((rule, index) => {
@@ -112,8 +114,11 @@ export function verifyArtifact(text: string, target: ArtifactTarget, expected: R
   return { total: actual.length, enabled: actual.filter(rule => rule.enabled !== false).length };
 }
 
-/** Target membership only: no DNS, routing policy, traffic generation or global configuration. */
+/** Address predicates only; HTTP headers and ASN databases require client verification. */
 export function matchesRules(rules: readonly Rule[], probe: string): boolean {
+  if (rules.some(rule => rule.enabled !== false && ["user-agent", "ip-asn"].includes(rule.type))) {
+    fail("rules", "address probes cannot evaluate User-Agent or ASN predicates");
+  }
   if (probe.includes("%")) fail("probe", "scoped IP probes are not supported");
   const family = isIP(probe);
   if (!family) checked([{ type: "domain", value: probe }], "probe");

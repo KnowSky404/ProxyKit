@@ -1,4 +1,4 @@
-import { ipNumber, RuleValidationError, validateRuleSet, type Rule, type RuleSet } from "./model.ts";
+import { appliesTo, ipNumber, RuleValidationError, validateRuleSet, type Rule, type RuleSet } from "./model.ts";
 
 export type RuleLocation = { source: number; group?: number; rule?: number };
 export type QualityDiagnostic = {
@@ -15,6 +15,7 @@ type Relation = NonNullable<QualityDiagnostic["relation"]>;
 function relation(left: Entry, right: Entry): Relation | undefined {
   const a = left.rule;
   const b = right.rule;
+  if (!(["loon", "quantumultx", "sing-box"] as const).some(target => appliesTo(a, target) && appliesTo(b, target))) return;
   if (left.network || right.network) {
     if (!left.network || !right.network || left.network.bits !== right.network.bits) return;
     const x = left.network;
@@ -24,6 +25,7 @@ function relation(left: Entry, right: Entry): Relation | undefined {
     return x.prefix === y.prefix ? "equal" : x.prefix < y.prefix ? "left-contains-right" : "right-contains-left";
   }
   if (a.type === b.type && a.value === b.value) return "equal";
+  if (!["domain", "domain-suffix"].includes(a.type) || !["domain", "domain-suffix"].includes(b.type)) return;
   const within = (value: string, suffix: string) => value === suffix || value.endsWith(`.${suffix}`);
   if (a.type === "domain-suffix" && within(b.value, a.value)) return "left-contains-right";
   if (b.type === "domain-suffix" && within(a.value, b.value)) return "right-contains-left";
@@ -37,7 +39,10 @@ function severity(left: Entry, right: Entry, overlap: Relation): "warning" | "in
   if (a && b) return "info"; // A set selects one policy, so containment is valid.
   // An enabled superset already covers the documented candidate. Enabling a
   // broader candidate, however, would expand the active match set.
-  if ((a && overlap === "left-contains-right") || (b && overlap === "right-contains-left")) return "info";
+  const covered = (a && overlap === "left-contains-right") || (b && overlap === "right-contains-left");
+  const active = a ? left.rule : right.rule;
+  const candidate = a ? right.rule : left.rule;
+  if (covered && (["loon", "quantumultx", "sing-box"] as const).every(target => !appliesTo(candidate, target) || appliesTo(active, target))) return "info";
   return "warning";
 }
 

@@ -41,6 +41,21 @@ function parse(text: string, target: typeof targets[number], source = synthetic)
 }
 
 describe("independent static generated-subset verification", () => {
+  test("independently parses client-scoped predicates and refuses to simulate headers or ASN lookup", () => {
+    const source = structuredClone(synthetic);
+    source.groups[0].rules.push(
+      { type: "user-agent", value: "Agent*", targets: ["loon"] },
+      { type: "ip-asn", value: "132203", targets: ["loon"], options: { no_resolve: true } },
+    );
+    const text = renderList(source, "loon");
+    expect(verifyArtifact(text, "loon", source)).toEqual({ total: 6, enabled: 6 });
+    expect(verifyArtifact(renderList(source, "quantumultx"), "quantumultx", source)).toEqual({ total: 4, enabled: 4 });
+    expect(verifyArtifact(renderSingBox(source), "sing-box", source)).toEqual({ total: 4, enabled: 4 });
+    expect(() => verifyArtifact(text.replace("USER-AGENT,Agent*\n", ""), "loon", source)).toThrow("count differs");
+    expect(() => matchesRules(parseListArtifact(text, "loon"), "example.net")).toThrow("cannot evaluate");
+    expect(() => parseListArtifact("USER-AGENT,Agent*,no-resolve\n", "loon")).toThrow("third field");
+    expect(() => parseListArtifact("IP-ASN,4294967296\n", "loon")).toThrow("canonical ASN");
+  });
   for (const target of targets) {
     test(`${target}: checks source order/state/options and all positive/negative boundary cases`, () => {
       const text = output(target);
@@ -222,11 +237,12 @@ describe("hand-authored regression corpus for every current rule set", () => {
   });
   for (const [setIndex, { name, data }] of sets.entries()) {
     for (const target of targets) {
-      test(`source[${setIndex}] ${target}: committed artifact matches the fixed positive/negative corpus`, () => {
+      test(`source[${setIndex}] ${target}: committed address predicates match the fixed positive/negative corpus`, () => {
         const path = target === "loon" ? `loon/rules/${name}.list` : target === "quantumultx" ? `quantumultx/filters/${name}.list` : `sing-box/rules/${name}.json`;
         const text = readFileSync(join(root, path), "utf8");
         verifyArtifact(text, target, data);
-        const rules = parse(text, target, data);
+        // HTTP headers and ASN database results are outside the address-only corpus.
+        const rules = parse(text, target, data).filter(rule => !["user-agent", "ip-asn"].includes(rule.type));
         for (const item of cases.filter(item => item.set === name)) expect(matchesRules(rules, item.probe)).toBe(item.match);
       });
     }

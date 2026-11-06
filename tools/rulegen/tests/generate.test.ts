@@ -166,3 +166,42 @@ describe("explicit handling of resolution semantics", () => {
     ]);
   });
 });
+
+describe("explicit client scope", () => {
+  test("Loon-only predicates preserve order and comments without expanding other clients", () => {
+    const data = fixture();
+    const originalJson = renderSingBox(data);
+    data.groups[0].rules.push(
+      { type: "user-agent", value: "Agent?*", targets: ["loon"], comments: ["Header only"] },
+      { type: "ip-asn", value: "132203", targets: ["loon"], options: { no_resolve: true } },
+      { type: "user-agent", value: "Disabled*", targets: ["loon"], enabled: false },
+    );
+    expect(renderList(data, "loon")).toContain("# Header only\nUSER-AGENT,Agent?*\nIP-ASN,132203,no-resolve\n# USER-AGENT,Disabled*\n");
+    const qx = renderList(data, "quantumultx");
+    expect(qx).toContain("# Header only\n# Not emitted for quantumultx: user-agent; targets=loon.");
+    expect(qx).not.toContain("USER-AGENT,");
+    expect(qx).not.toContain("IP-ASN,");
+    expect(renderSingBox(data)).toBe(originalJson);
+  });
+  test("unsupported sing-box predicates require explicit exclusion, even when disabled", () => {
+    for (const type of ["user-agent", "ip-asn"] as const) for (const enabled of [true, false]) {
+      const data = fixture();
+      data.groups[0].rules.push({ type, value: type === "user-agent" ? "Agent*" : "132203", enabled });
+      expect(() => renderSingBox(data)).toThrow("restrict targets explicitly");
+    }
+  });
+  test("each selected client must have enabled predicates", () => {
+    const data = fixture();
+    data.groups = [{ name: "Loon", rules: [{ type: "user-agent", value: "Agent*", targets: ["loon"] }] }];
+    expect(() => renderList(data, "loon")).not.toThrow();
+    expect(() => renderList(data, "quantumultx")).toThrow("enabled rule for this client");
+    expect(() => renderSingBox(data)).toThrow("enabled rule for this client");
+  });
+  test("QX can explicitly opt in with its policy-token compatibility contract", () => {
+    const data = fixture();
+    data.groups[0].rules.push({ type: "ip-asn", value: "132203", targets: ["quantumultx"], options: { no_resolve: true } });
+    expect(renderList(data, "quantumultx")).toContain("IP-ASN,132203,no-resolve");
+    delete data.compatibility!.quantumultx_no_resolve;
+    expect(() => renderList(data, "quantumultx")).toThrow("legacy-policy-token");
+  });
+});

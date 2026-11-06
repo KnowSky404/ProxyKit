@@ -56,11 +56,12 @@ groups:
 | `groups[].name` | 非空字符串，对应分组注释 |
 | `groups[].comments` | 可选字符串数组，分组补充说明 |
 | `groups[].rules` | 非空数组，按顺序排列匹配条件 |
-| `rules[].type` | `domain`、`domain-suffix`、`ipv4-cidr` 或 `ipv6-cidr` |
-| `rules[].value` | 单个域名或带前缀长度的 CIDR |
+| `rules[].type` | `domain`、`domain-suffix`、`ipv4-cidr`、`ipv6-cidr`、`user-agent` 或 `ip-asn` |
+| `rules[].value` | 单个域名、带前缀长度的 CIDR、User-Agent 通配符模式或十进制 ASN；均为字符串 |
 | `rules[].enabled` | 可选布尔值，默认 `true`；`false` 为禁用候选项 |
+| `rules[].targets` | 可选非空客户端数组，取值 `loon`、`quantumultx`、`sing-box`，不允许重复；省略表示全部客户端 |
 | `rules[].comments` | 可选字符串数组，规则前的注释 |
-| `rules[].options.no_resolve` | 可选布尔值，仅适用于 CIDR；显式保留解析意图 |
+| `rules[].options.no_resolve` | 可选布尔值，仅适用于 CIDR / ASN；显式保留解析意图 |
 | `compatibility` | 可选对象，承认目标端无法直接表达的解析语义；见下文 |
 
 字段类型必须严格匹配；未知字段、未知版本和规则类型直接失败，防止拼写错误被忽略。YAML 重复映射键、别名展开、未知标签、多文档输入和解析器警告均拒绝。注释应作为上述结构化字段保存；普通 YAML `#` 注释不是输出内容。不要在匹配源中加入节点或策略名称。
@@ -69,9 +70,10 @@ groups:
 
 - 域名采用规范化小写 ASCII / punycode，不允许 URL、通配符、端口、空标签、前导点、尾随点、IP 地址或标签首尾连字符；标签和总长度必须合法。国际化域名先转换为 punycode。
 - CIDR 必须包含有效 IPv4 / IPv6 和对应范围的前缀长度，类型与地址族一致。网络边界及规范化要求由校验器检查；不能默默扩大匹配范围。
+- ASN 使用无前导零的十进制字符串，范围 `1..4294967295`。User-Agent 模式保留大小写，支持 `*` / `?`；当前生成子集限于不含空白和逗号的可打印 ASCII，拒绝配置字段注入。
 - 同一规则集内重复条件拒绝，包括启用与禁用状态之间重复，以及同一条件的冲突选项。不同集合可以包含共同依赖，因为每组由用户分别选择策略。
 - 后缀覆盖的禁用精确域名可以保留：这是原始抓包说明，并非应自动删除的重复。覆盖关系不等同于相同规则；本阶段不自动合并、排序或去重。
-- 每组必须有规则，整个集合至少有一条启用条件。仅包含注释、空组或全部禁用均失败。
+- 每组必须有规则，整个集合至少有一条启用条件；每个选定客户端也必须至少有一条适用的启用条件。仅包含注释、空组或全部禁用均失败。
 - `no_resolve` 不得用于域名；不能通过错误类型、未识别兼容策略或目标不支持的选项生成看似有效的文件。
 
 CLI 诊断定位文件序号、分组与规则位置，不输出具体域名、IP 或输入原文。语义校验在写文件之前完成。
@@ -84,6 +86,25 @@ CLI 诊断定位文件序号、分组与规则位置，不输出具体域名、I
 | `domain-suffix` | `DOMAIN-SUFFIX` | `HOST-SUFFIX` | `domain_suffix` |
 | `ipv4-cidr` | `IP-CIDR` | `IP-CIDR` | `ip_cidr` |
 | `ipv6-cidr` | `IP-CIDR6` | `IP6-CIDR` | `ip_cidr` |
+| `user-agent` | `USER-AGENT` | `USER-AGENT` | 不支持，须用 `targets` 明确排除 |
+| `ip-asn` | `IP-ASN` | `IP-ASN` | 不支持，须用 `targets` 明确排除 |
+
+`targets` 只决定条件适用于哪些客户端，不改变 `enabled`。未选中的文本目标保留组/规则注释，并输出排除说明；JSON/SRS 只含适用于 sing-box 的启用条件。若 sing-box 在适用范围内，即使条件禁用，也拒绝无法表示的 User-Agent / ASN，避免默默丢弃。原有未限定 `targets` 的规则仍默认三端同步；只有任务明确限定客户端或存在已记录的能力限制时才使用此字段。
+
+例如 WeChat 经明确要求只给 Loon 补充上游 HTTP / ASN 条件：
+
+```yaml
+- type: user-agent
+  value: "MicroMessenger*"
+  targets: [loon]
+- type: ip-asn
+  value: "132203"
+  targets: [loon]
+  options:
+    no_resolve: true
+```
+
+[Loon HTTP 规则](https://nsloon.app/docs/Rule/http_rule/)基于可见请求头匹配，不能等同于识别整个 App；[ASN 规则](https://nsloon.app/docs/Rule/ip_rule/)依赖客户端 ASN 数据库，不等同于固定 CIDR。QX 的[官方配置样例](https://raw.githubusercontent.com/crossutility/Quantumult-X/master/sample.conf)也支持 User-Agent / ASN，但本次 WeChat 按要求仅在 Loon 启用；sing-box [headless Schema](https://sing-box.sagernet.org/configuration/rule-set/headless-rule/)没有对应字段，不自动展开 ASN 网段。QX ASN 如使用历史第三字段 `no-resolve`，仍须遵守下方策略 token 契约。
 
 后缀 `example.com` 包含根域、`a.example.com` 和更深子域，不包含 `badexample.com`。sing-box 不添加前导点，避免排除根域。IPv4/IPv6 都表示目标地址，不使用源地址选项。
 
@@ -171,4 +192,4 @@ bun test
 
 以上为语法示例，`2001:db8::/32` 是文档示例网段，不应加入业务规则。QX 示例第三字段仍是须由 `force-policy` 覆盖的兼容策略文本；sing-box 仍依赖主配置不预解析，详见上方解析兼容边界。
 
-跨端文本等价检查在转换 `HOST` / `HOST-SUFFIX` 的同时，必须将 QX 的 `IP6-CIDR` 归一化为 Loon 的 `IP-CIDR6`，再比较顺序、值、注释、启用状态和选项。`tools/rulegen/tests/migration.test.ts` 对所有当前集合执行这一检查；Telegram 的 IPv6 条件及 `fixtures/matches.json` 中的网段内外边界样例同时覆盖独立解析与官方 sing-box 的 JSON/SRS 运行时匹配。关键字差异本身是预期客户端适配，不能据此修改正确的生成器输出。
+跨端文本等价检查在转换 `HOST` / `HOST-SUFFIX` 的同时，必须将 QX 的 `IP6-CIDR` 归一化为 Loon 的 `IP-CIDR6`，再比较顺序、值、注释、启用状态和选项。`tools/rulegen/tests/migration.test.ts` 对未限定客户端的集合执行全文等价检查；含 `targets` 的集合逐端核对源条件及排除项，并单独断言 WeChat 的原 31 条共同条件和 Loon 3 条补充。Telegram 的 IPv6 条件及 `fixtures/matches.json` 中的网段内外边界样例同时覆盖独立解析与官方 sing-box 的 JSON/SRS 运行时匹配。关键字差异本身是预期客户端适配，不能据此修改正确的生成器输出。

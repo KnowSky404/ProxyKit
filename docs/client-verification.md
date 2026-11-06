@@ -18,7 +18,9 @@
 4. 对临时 IPv4/IPv6 CIDR 测试网络首尾、两侧邻接地址。直接 IP 请求应按预期匹配；带 `no-resolve` 的条件不得被描述为会主动解析域名的规则。另用受控 DNS 日志确认域名请求有无发生解析，并记录主配置对结果的影响。
 5. 在临时订阅中添加/移除 probe 后手动更新并重测，确认实际加载内容、规则命中及策略已变化。记录失败时的资源状态；不要凭“下载成功”断言匹配成功。
 
-语法依据：[域名规则](https://nsloon.app/docs/Rule/domain_rule/)、[IP 规则与 no-resolve](https://nsloon.app/docs/Rule/ip_rule/)。当前仓库没有可靠的官方 Loon CLI 加载器，只对本项目四种输出语法作有限静态验证。
+6. WeChat 应加载 34 条启用条件。对两条 User-Agent 使用受控 HTTP 请求头，分别测试匹配前缀和无关前缀；记录 HTTPS 下请求头是否可见，不据此推断整个 App 都会匹配。对 `AS132203` 用客户端 ASN 数据库确认测试目标归属，检查纯 IP 请求及 `no-resolve` 行为，并记录共享腾讯业务也可能命中。自动化测试只检查新增条件的语法与来源，不替代这一步。
+
+语法依据：[域名规则](https://nsloon.app/docs/Rule/domain_rule/)、[IP 规则与 no-resolve](https://nsloon.app/docs/Rule/ip_rule/)、[HTTP / User-Agent 规则](https://nsloon.app/docs/Rule/http_rule/)。当前仓库没有可靠的官方 Loon CLI 加载器，只对本项目生成语法作有限静态验证。
 
 ## Quantumult X：Apple 平台
 
